@@ -7,9 +7,14 @@ namespace ScrabbleScorer.Tests.Utilities;
 
 public static class DebugUtility
 {
-    public static void DrawInHtml(Coordinate[] occupiedCoordinates, (Coordinate coordinate, Alignment alignment)[] possibleLetterCoordinates, int wordLength)
+    public static void DrawInHtml(
+        Coordinate[] occupiedCoordinates,
+        (Coordinate coordinate, Alignment alignment)[] possibleLetterCoordinates,
+        int wordLength
+    )
     {
-        var source = @"
+        var source =
+            @"
         <html lang=""en"">
             <meta charset=""UTF-8"">
             <title>Debug</title>
@@ -70,12 +75,18 @@ public static class DebugUtility
         };
 
         var html = template(data);
-        
-        var filePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), $"test-{wordLength}.html");
+
+        var filePath = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
+            $"test-{wordLength}.html"
+        );
         File.WriteAllText(filePath, html);
     }
-    
-    private static object[][] ShowHighlightedGrids(Coordinate[] occupiedCoordinates, (Coordinate coordinate, Alignment alignment)[] possibleCoords)
+
+    private static object[][] ShowHighlightedGrids(
+        Coordinate[] occupiedCoordinates,
+        (Coordinate coordinate, Alignment alignment)[] possibleCoords
+    )
     {
         var grid = (
             from y in Enumerable.Range(1, 15).Reverse()
@@ -83,17 +94,36 @@ public static class DebugUtility
                 from x in Enumerable.Range(1, 15)
                 select new
                 {
-                    BothVerticalHorizontal = 
-                        possibleCoords.Any(c => c.coordinate.X == x && c.coordinate.Y == y && c.alignment == Alignment.Horizontal)
-                        && possibleCoords.Any(c => c.coordinate.X == x && c.coordinate.Y == y && c.alignment == Alignment.Vertical),
-                    Vertical = possibleCoords.Any(c => c.coordinate.X == x && c.coordinate.Y == y && c.alignment == Alignment.Vertical),
-                    Horizontal = possibleCoords.Any(c => c.coordinate.X == x && c.coordinate.Y == y && c.alignment == Alignment.Horizontal),
+                    BothVerticalHorizontal = possibleCoords.Any(
+                        c =>
+                            c.coordinate.X == x
+                            && c.coordinate.Y == y
+                            && c.alignment == Alignment.Horizontal
+                    )
+                        && possibleCoords.Any(
+                            c =>
+                                c.coordinate.X == x
+                                && c.coordinate.Y == y
+                                && c.alignment == Alignment.Vertical
+                        ),
+                    Vertical = possibleCoords.Any(
+                        c =>
+                            c.coordinate.X == x
+                            && c.coordinate.Y == y
+                            && c.alignment == Alignment.Vertical
+                    ),
+                    Horizontal = possibleCoords.Any(
+                        c =>
+                            c.coordinate.X == x
+                            && c.coordinate.Y == y
+                            && c.alignment == Alignment.Horizontal
+                    ),
                     Occupied = occupiedCoordinates.Any(oc => oc.X == x && oc.Y == y),
-                    X = x, 
-                    Y = y 
-                })
-                .ToArray())
-            .ToArray();
+                    X = x,
+                    Y = y
+                }
+            ).ToArray()
+        ).ToArray();
 
         return grid;
     }

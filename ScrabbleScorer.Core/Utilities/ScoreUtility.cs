@@ -16,9 +16,7 @@ public static class ScoreUtility
         for (var i = 0; i < letters.Length; i++)
         {
             var letter = letters[i];
-            var bonus = bonuses is not null
-                ? bonuses[i]
-                : BonusType.None;
+            var bonus = bonuses is not null ? bonuses[i] : BonusType.None;
 
             switch (bonus)
             {

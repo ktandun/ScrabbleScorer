@@ -6,9 +6,7 @@ namespace ScrabbleScorer.Tests;
 public class ScoreUtilityTest
 {
     [SetUp]
-    public void Setup()
-    {
-    }
+    public void Setup() { }
 
     [Test]
     public void TestLetterValue()
@@ -39,7 +37,8 @@ public class ScoreUtilityTest
     {
         var score = ScoreUtility.CalculateScore(
             "QI",
-            new[] { BonusType.DoubleLetter, BonusType.None });
+            new[] { BonusType.DoubleLetter, BonusType.None }
+        );
 
         Assert.That(score, Is.EqualTo(21));
     }
@@ -49,7 +48,8 @@ public class ScoreUtilityTest
     {
         var score = ScoreUtility.CalculateScore(
             "QI",
-            new[] { BonusType.TripleLetter, BonusType.None });
+            new[] { BonusType.TripleLetter, BonusType.None }
+        );
 
         Assert.That(score, Is.EqualTo(31));
     }
@@ -59,7 +59,8 @@ public class ScoreUtilityTest
     {
         var score = ScoreUtility.CalculateScore(
             "QI",
-            new[] { BonusType.DoubleWord, BonusType.None });
+            new[] { BonusType.DoubleWord, BonusType.None }
+        );
 
         Assert.That(score, Is.EqualTo(22));
     }
@@ -69,7 +70,8 @@ public class ScoreUtilityTest
     {
         var score = ScoreUtility.CalculateScore(
             "QI",
-            new[] { BonusType.TripleWord, BonusType.None });
+            new[] { BonusType.TripleWord, BonusType.None }
+        );
 
         Assert.That(score, Is.EqualTo(33));
     }

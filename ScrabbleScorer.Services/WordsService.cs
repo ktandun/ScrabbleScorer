@@ -10,11 +10,15 @@ namespace ScrabbleScorer.Services;
 
 public class WordsService : IWordsService
 {
-    public async Task<string[]> FindPossibleWordsAsync(string letters, (int position, char letter)[] restrictions)
+    public async Task<string[]> FindPossibleWordsAsync(
+        string letters,
+        (int position, char letter)[] restrictions
+    )
     {
         var sortedLetters = letters.ToSortedLetters();
 
-        var letterCombinations = Enumerable.Range(1, letters.Length)
+        var letterCombinations = Enumerable
+            .Range(1, letters.Length)
             .SelectMany(r => sortedLetters.DifferentCombinations(r))
             .Distinct()
             .Select(w => new string(w.ToArray()))
@@ -33,16 +37,18 @@ public class WordsService : IWordsService
 
         await using var database = new DatabaseContext();
 
-        var restrictionQueryString = restrictions.Length > 0
-            ? $"w.Word like '{CreateRestrictionQueryString(restrictions, letters.Length)}' and length(w.Word) = {letters.Length}"
-            : "true";
+        var restrictionQueryString =
+            restrictions.Length > 0
+                ? $"w.Word like '{CreateRestrictionQueryString(restrictions, letters.Length)}' and length(w.Word) = {letters.Length}"
+                : "true";
 
         var query = $"select * from Words w where {restrictionQueryString}";
 
         var wordCombinationsPredicate = string.Join(
             " OR ",
             from wc in letterCombinations
-            select $"w.WordSorted like '{wc}'");
+            select $"w.WordSorted like '{wc}'"
+        );
 
         var matchingWords = await database.Words
             .FromSqlRaw($"{query} AND ({wordCombinationsPredicate})")
@@ -52,18 +58,20 @@ public class WordsService : IWordsService
         return matchingWords;
     }
 
-    private string CreateRestrictionQueryString((int position, char letter)[] restrictions, int wordLength)
+    private string CreateRestrictionQueryString(
+        (int position, char letter)[] restrictions,
+        int wordLength
+    )
     {
-        var orderedRestrictions = restrictions
-            .OrderBy(r => r.position)
-            .ToArray();
+        var orderedRestrictions = restrictions.OrderBy(r => r.position).ToArray();
 
         var firstPosition = orderedRestrictions.First().position;
         var lastPosition = orderedRestrictions.Last().position;
 
         var lettersCount = lastPosition - firstPosition + 1;
 
-        var queryString = Enumerable.Range(firstPosition, lettersCount)
+        var queryString = Enumerable
+            .Range(firstPosition, lettersCount)
             .Select(r =>
             {
                 var hasRestrictionOnPosition = restrictions.Any(re => re.position == r);
@@ -80,19 +88,37 @@ public class WordsService : IWordsService
         return $"{startWildcard}{new string(queryString)}{endWildcard}";
     }
 
-    public (Coordinate coordinate, Alignment alignment)[] FindPossibleWordLocations(Board board, int wordLength)
+    public (Coordinate coordinate, Alignment alignment)[] FindPossibleWordLocations(
+        Board board,
+        int wordLength
+    )
     {
-        var occupiedCoordinates = board.BoardLetters
-            .Select(bl => bl.Coordinate)
-            .ToArray();
+        var occupiedCoordinates = board.BoardLetters.Select(bl => bl.Coordinate).ToArray();
 
         return BoardCoordinateConstants.AllCoordinates
-            .Where(c => CoordinateUtility.CanMakeWordOnCoordinate(occupiedCoordinates, c, Alignment.Horizontal, wordLength))
+            .Where(
+                c =>
+                    CoordinateUtility.CanMakeWordOnCoordinate(
+                        occupiedCoordinates,
+                        c,
+                        Alignment.Horizontal,
+                        wordLength
+                    )
+            )
             .Select(c => (c, Alignment.Horizontal))
             .Concat(
                 BoardCoordinateConstants.AllCoordinates
-                    .Where(c => CoordinateUtility.CanMakeWordOnCoordinate(occupiedCoordinates, c, Alignment.Vertical, wordLength))
-                    .Select(c => (c, Alignment.Vertical)))
+                    .Where(
+                        c =>
+                            CoordinateUtility.CanMakeWordOnCoordinate(
+                                occupiedCoordinates,
+                                c,
+                                Alignment.Vertical,
+                                wordLength
+                            )
+                    )
+                    .Select(c => (c, Alignment.Vertical))
+            )
             .Distinct()
             .ToArray();
     }
@@ -101,26 +127,44 @@ public class WordsService : IWordsService
     {
         var validPossibleWords = new List<WordPlacementModel>();
 
-        foreach (var wordLength in Enumerable.Range(1, BoardCoordinateConstants.BoardSize - letters.Length + 1).Reverse())
+        foreach (
+            var wordLength in Enumerable
+                .Range(1, BoardCoordinateConstants.BoardSize - letters.Length + 1)
+                .Reverse()
+        )
         {
             var possibleLocations = FindPossibleWordLocations(board, wordLength);
 
             foreach (var location in possibleLocations)
             {
-                var placementRestrictions = GetPlacementRestrictions(board, location.coordinate, location.alignment, wordLength);
+                var placementRestrictions = GetPlacementRestrictions(
+                    board,
+                    location.coordinate,
+                    location.alignment,
+                    wordLength
+                );
 
                 var possibleWords = await FindPossibleWordsAsync(letters, placementRestrictions);
 
                 foreach (var possibleWord in possibleWords.Where(w => w.Length == wordLength))
                 {
-                    if (await IsAdjacentWordsValidAsync(board.BoardLetters, location.coordinate, location.alignment, possibleWord))
+                    if (
+                        await IsAdjacentWordsValidAsync(
+                            board.BoardLetters,
+                            location.coordinate,
+                            location.alignment,
+                            possibleWord
+                        )
+                    )
                     {
-                        validPossibleWords.Add(new WordPlacementModel
-                        {
-                            Word = possibleWord,
-                            Coordinate = location.coordinate,
-                            Alignment = location.alignment
-                        });
+                        validPossibleWords.Add(
+                            new WordPlacementModel
+                            {
+                                Word = possibleWord,
+                                Coordinate = location.coordinate,
+                                Alignment = location.alignment
+                            }
+                        );
                     }
                 }
             }
@@ -129,7 +173,12 @@ public class WordsService : IWordsService
         return validPossibleWords.ToArray();
     }
 
-    private BoardLetter[] TryPlaceWord(BoardLetter[] occupiedCoordinates, Coordinate coordinate, Alignment alignment, string letters)
+    private BoardLetter[] TryPlaceWord(
+        BoardLetter[] occupiedCoordinates,
+        Coordinate coordinate,
+        Alignment alignment,
+        string letters
+    )
     {
         var tempBoardLetters = occupiedCoordinates.ToList();
 
@@ -138,13 +187,11 @@ public class WordsService : IWordsService
         for (var i = 0; i < letters.Length; i++)
         {
             var letter = letters[i];
-            
+
             if (tempBoardLetters.All(bl => bl.Coordinate != currCoordinate))
-                tempBoardLetters.Add(new BoardLetter
-                {
-                    Letter = letter.ToLetter(),
-                    Coordinate = currCoordinate
-                });
+                tempBoardLetters.Add(
+                    new BoardLetter { Letter = letter.ToLetter(), Coordinate = currCoordinate }
+                );
 
             if (i != letters.Length - 1)
                 currCoordinate = currCoordinate.Next(alignment);
@@ -153,7 +200,12 @@ public class WordsService : IWordsService
         return tempBoardLetters.ToArray();
     }
 
-    private async Task<bool> IsAdjacentWordsValidAsync(BoardLetter[] boardLetters, Coordinate coordinate, Alignment alignment, string word)
+    private async Task<bool> IsAdjacentWordsValidAsync(
+        BoardLetter[] boardLetters,
+        Coordinate coordinate,
+        Alignment alignment,
+        string word
+    )
     {
         var bls = TryPlaceWord(boardLetters, coordinate, alignment, word);
         var boardLetterCoords = bls.Select(bl => bl.Coordinate).ToArray();
@@ -176,12 +228,17 @@ public class WordsService : IWordsService
         return await IsValidWordAsync(bls, wordStartCoord, wordEndCoord, alignment);
     }
 
-    private async Task<bool> IsValidWordAsync(BoardLetter[] boardLetters, Coordinate start, Coordinate end, Alignment alignment)
+    private async Task<bool> IsValidWordAsync(
+        BoardLetter[] boardLetters,
+        Coordinate start,
+        Coordinate end,
+        Alignment alignment
+    )
     {
         var chars = (
             from coordinate in start.To(end, alignment)
-            select boardLetters.First(bl => bl.Coordinate == coordinate).Letter.ToChar())
-            .ToArray();
+            select boardLetters.First(bl => bl.Coordinate == coordinate).Letter.ToChar()
+        ).ToArray();
 
         var word = new string(chars);
 
@@ -194,14 +251,17 @@ public class WordsService : IWordsService
         Board board,
         Coordinate coordinate,
         Alignment alignment,
-        int wordLength)
+        int wordLength
+    )
     {
         var currCoordinate = coordinate;
         var restrictions = new List<(int, char)>();
 
         for (var pos = 1; pos <= wordLength; pos++)
         {
-            var boardLetter = board.BoardLetters.FirstOrDefault(bl => bl.Coordinate == currCoordinate);
+            var boardLetter = board.BoardLetters.FirstOrDefault(
+                bl => bl.Coordinate == currCoordinate
+            );
 
             if (boardLetter is not null)
             {

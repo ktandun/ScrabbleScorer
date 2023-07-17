@@ -19,9 +19,7 @@ if (!database.IsExist())
         var wordEntity = new WordEntity
         {
             Word = word,
-            WordSorted = word
-                .ToLowerInvariant()
-                .ToSortedLetters(reverse: true)
+            WordSorted = word.ToLowerInvariant().ToSortedLetters(reverse: true)
         };
 
         database.Add(wordEntity);
