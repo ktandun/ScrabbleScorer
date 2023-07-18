@@ -125,7 +125,7 @@ public class WordsService : IWordsService
 
     public async Task<WordPlacementModel[]> FindTopScoringWordsAsync(Board board, string letters)
     {
-        var validPossibleWords = new List<WordPlacementModel>();
+        var validPossibleWords = new HashSet<WordPlacementModel>();
 
         foreach (
             var wordLength in Enumerable
@@ -173,33 +173,6 @@ public class WordsService : IWordsService
         return validPossibleWords.ToArray();
     }
 
-    private BoardLetter[] TryPlaceWord(
-        BoardLetter[] occupiedCoordinates,
-        Coordinate coordinate,
-        Alignment alignment,
-        string letters
-    )
-    {
-        var tempBoardLetters = occupiedCoordinates.ToList();
-
-        var currCoordinate = coordinate;
-
-        for (var i = 0; i < letters.Length; i++)
-        {
-            var letter = letters[i];
-
-            if (tempBoardLetters.All(bl => bl.Coordinate != currCoordinate))
-                tempBoardLetters.Add(
-                    new BoardLetter { Letter = letter.ToLetter(), Coordinate = currCoordinate }
-                );
-
-            if (i != letters.Length - 1)
-                currCoordinate = currCoordinate.Next(alignment);
-        }
-
-        return tempBoardLetters.ToArray();
-    }
-
     private async Task<bool> IsAdjacentWordsValidAsync(
         BoardLetter[] boardLetters,
         Coordinate coordinate,
@@ -207,7 +180,7 @@ public class WordsService : IWordsService
         string word
     )
     {
-        var bls = TryPlaceWord(boardLetters, coordinate, alignment, word);
+        var bls = BoardUtility.TryPlaceWord(boardLetters, coordinate, alignment, word);
         var boardLetterCoords = bls.Select(bl => bl.Coordinate).ToArray();
 
         var wordStartCoord = coordinate.FirstNonBlank(boardLetterCoords, alignment);

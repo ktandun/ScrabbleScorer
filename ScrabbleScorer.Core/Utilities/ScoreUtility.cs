@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using ScrabbleScorer.Core.Enums;
+using ScrabbleScorer.Core.Models;
 
 namespace ScrabbleScorer.Core.Utilities;
 
