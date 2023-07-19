@@ -123,9 +123,10 @@ public class WordsService : IWordsService
             .ToArray();
     }
 
-    public async Task<WordPlacementModel[]> FindTopScoringWordsAsync(Board board, string letters)
+    public async Task<IOrderedEnumerable<TopScoringWordModel>> FindTopScoringWordsAsync(Board board, string letters)
     {
-        var validPossibleWords = new HashSet<WordPlacementModel>();
+        var validPossibleWords =
+            new List<(string word, Coordinate coordinate, Alignment alignment)>();
 
         foreach (
             var wordLength in Enumerable
@@ -158,19 +159,24 @@ public class WordsService : IWordsService
                     )
                     {
                         validPossibleWords.Add(
-                            new WordPlacementModel
-                            {
-                                Word = possibleWord,
-                                Coordinate = location.coordinate,
-                                Alignment = location.alignment
-                            }
+                            (possibleWord, location.coordinate, location.alignment)
                         );
                     }
                 }
             }
         }
 
-        return validPossibleWords.ToArray();
+        return (
+            from x in validPossibleWords
+            let score = ScoreUtility.CalculateScore(board, x.coordinate, x.alignment, x.word)
+            select new TopScoringWordModel
+            {
+                Score = score,
+                Word = x.word,
+                Coordinate = x.coordinate,
+                Alignment = x.alignment,
+            }
+        ).OrderByDescending(x => x.Score);
     }
 
     private async Task<bool> IsAdjacentWordsValidAsync(

@@ -1,4 +1,5 @@
 using ScrabbleScorer.Core.Enums;
+using ScrabbleScorer.Core.Models;
 using ScrabbleScorer.Core.Utilities;
 
 namespace ScrabbleScorer.Tests;
@@ -74,5 +75,37 @@ public class ScoreUtilityTest
         );
 
         Assert.That(score, Is.EqualTo(33));
+    }
+
+    [Test]
+    public void CalculateScoreTest()
+    {
+        var board = new Board
+        {
+            BoardLetters = new BoardLetter[]
+            {
+                new() { Letter = Letter.S, Coordinate = new Coordinate(8, 8) },
+                new() { Letter = Letter.O, Coordinate = new Coordinate(8, 7) },
+                new() { Letter = Letter.N, Coordinate = new Coordinate(8, 6) },
+                new() { Letter = Letter.A, Coordinate = new Coordinate(8, 5) },
+                new() { Letter = Letter.T, Coordinate = new Coordinate(8, 4) },
+                new() { Letter = Letter.A, Coordinate = new Coordinate(8, 3) },
+                new() { Letter = Letter.P, Coordinate = new Coordinate(9, 8) },
+                new() { Letter = Letter.O, Coordinate = new Coordinate(10, 8) },
+                new() { Letter = Letter.O, Coordinate = new Coordinate(11, 8) },
+                new() { Letter = Letter.N, Coordinate = new Coordinate(12, 8) },
+                new() { Letter = Letter.T, Coordinate = new Coordinate(10, 7) },
+                new() { Letter = Letter.H, Coordinate = new Coordinate(10, 6) },
+                new() { Letter = Letter.E, Coordinate = new Coordinate(10, 5) },
+                new() { Letter = Letter.R, Coordinate = new Coordinate(10, 4) },
+            }
+        };
+
+        var score = ScoreUtility.CalculateScore(
+            board,
+            new Coordinate(9, 7),
+            Alignment.Vertical,
+            "OO"
+        );
     }
 }

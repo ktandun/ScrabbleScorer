@@ -2,7 +2,6 @@
 using ScrabbleScorer.Core.Utilities;
 using ScrabbleScorer.Database;
 using ScrabbleScorer.Database.Entities;
-using ScrabbleScorer.Services;
 
 var seeder = new WordsSeeder();
 var words = seeder.SeedWords();

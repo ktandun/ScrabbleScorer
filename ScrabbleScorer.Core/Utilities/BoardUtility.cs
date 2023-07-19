@@ -49,15 +49,14 @@ public static class BoardUtility
                 && !occupiedCoordinates.Contains(boardCoord.Prev(alignment, peek: true))
             let wordFirstCoordinate = boardCoord
             let wordLastCoordinate = boardCoord.LastNonBlank(occupiedCoordinates, alignment)
-            let word = GetWordFromCoordinates(
-                boardLetters,
-                wordFirstCoordinate.To(wordLastCoordinate, alignment)
-            )
+            let wordCoordinates = wordFirstCoordinate.To(wordLastCoordinate, alignment).ToArray()
+            let word = GetWordFromCoordinates(boardLetters, wordCoordinates)
             select new WordPlacementModel
             {
                 Word = word,
                 Alignment = alignment,
-                Coordinate = boardCoord
+                StartCoordinate = boardCoord,
+                Coordinates = wordCoordinates
             }
         ).ToArray();
     }
@@ -81,16 +80,16 @@ public static class BoardUtility
         BoardLetter[] after
     )
     {
-        var wordsBefore = BoardUtility.GetWordsOnBoard(before);
-        var wordsAfter = BoardUtility.GetWordsOnBoard(after);
+        var wordsBefore = GetWordsOnBoard(before);
+        var wordsAfter = GetWordsOnBoard(after);
 
-        var temp = new HashSet<WordPlacementModel>(wordsAfter);
+        var createdWords = wordsAfter.Where(
+            wa =>
+                !wordsBefore.Any(
+                    wb => wb.StartCoordinate == wa.StartCoordinate && wb.Alignment == wa.Alignment
+                )
+        );
 
-        foreach (var wordBefore in wordsBefore)
-        {
-            temp.Remove(wordBefore);
-        }
-
-        return temp.ToArray();
+        return createdWords.ToArray();
     }
 }

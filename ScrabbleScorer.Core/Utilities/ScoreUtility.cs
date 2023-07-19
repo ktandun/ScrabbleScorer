@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using ScrabbleScorer.Core.Constants;
 using ScrabbleScorer.Core.Enums;
 using ScrabbleScorer.Core.Models;
 
@@ -44,5 +45,39 @@ public static class ScoreUtility
         }
 
         return multiplier * sum;
+    }
+
+    public static int CalculateScore(
+        Board board,
+        Coordinate coordinate,
+        Alignment alignment,
+        string letters
+    )
+    {
+        var boardLetterCoordinates = board.BoardLetters.Select(bl => bl.Coordinate).ToArray();
+        var boardLetterAfterPlacement = BoardUtility.TryPlaceWord(
+            board.BoardLetters,
+            coordinate,
+            alignment,
+            letters
+        );
+
+        var wordPlacements = BoardUtility.FindCreatedWordsAfterPlacement(
+            board.BoardLetters,
+            boardLetterAfterPlacement
+        );
+
+        return (
+            from wordPlacement in wordPlacements
+            let bonusTypes = wordPlacement.Coordinates.Select(c =>
+            {
+                return boardLetterCoordinates.Contains(c)
+                    ? BonusType.None
+                    : BoardCoordinateConstants.BonusTiles
+                        .FirstOrDefault(bt => bt.Coordinate == c)
+                        ?.BonusType ?? BonusType.None;
+            })
+            select CalculateScore(wordPlacement.Word, bonusTypes.ToArray())
+        ).Sum();
     }
 }
