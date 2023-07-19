@@ -12,6 +12,7 @@ public interface IWordsService
 
     Task<string[]> FindPossibleWordsAsync(
         string letters,
-        (int position, char letter)[] restrictions
+        (int position, char letter)[] restrictions,
+        int wordLength
     );
 }

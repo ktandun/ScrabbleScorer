@@ -14,7 +14,8 @@ public class WordsServiceTest
 
         var words = await wordsService.FindPossibleWordsAsync(
             "quebech",
-            Array.Empty<(int, char)>()
+            Array.Empty<(int, char)>(),
+            2
         );
 
         Assert.That(words, Is.Not.Empty);
@@ -25,7 +26,7 @@ public class WordsServiceTest
     {
         var wordsService = new WordsService();
 
-        var words = await wordsService.FindPossibleWordsAsync("ca_", Array.Empty<(int, char)>());
+        var words = await wordsService.FindPossibleWordsAsync("ca_", Array.Empty<(int, char)>(), 3);
 
         Assert.Multiple(() =>
         {
@@ -42,7 +43,8 @@ public class WordsServiceTest
 
         var words = await wordsService.FindPossibleWordsAsync(
             "atanos",
-            new[] { (1, 's'), (3, 'n'), (5, 't') }
+            new[] { (1, 's'), (3, 'n'), (5, 't') },
+            6
         );
 
         Assert.Multiple(() =>
@@ -58,7 +60,7 @@ public class WordsServiceTest
     {
         var wordsService = new WordsService();
 
-        var words = await wordsService.FindPossibleWordsAsync("ca_", new[] { (1, 'a') });
+        var words = await wordsService.FindPossibleWordsAsync("ca_", new[] { (1, 'a') }, 3);
 
         Assert.Multiple(() =>
         {
@@ -386,9 +388,9 @@ public class WordsServiceTest
             }
         };
 
-        var wordPlacementModels = await wordsService.FindTopScoringWordsAsync(board, "hellowo");
+        var wordPlacementModels = await wordsService.FindTopScoringWordsAsync(board, "poo");
     }
-    
+
     [Test]
     public async Task RealLifeTest()
     {
@@ -401,41 +403,33 @@ public class WordsServiceTest
                 new() { Letter = Letter.E, Coordinate = new Coordinate(8, 15) },
                 new() { Letter = Letter.V, Coordinate = new Coordinate(9, 15) },
                 new() { Letter = Letter.O, Coordinate = new Coordinate(10, 15) },
-                
                 new() { Letter = Letter.Q, Coordinate = new Coordinate(6, 14) },
                 new() { Letter = Letter.A, Coordinate = new Coordinate(7, 14) },
                 new() { Letter = Letter.T, Coordinate = new Coordinate(8, 14) },
-                
                 new() { Letter = Letter.H, Coordinate = new Coordinate(10, 14) },
                 new() { Letter = Letter.A, Coordinate = new Coordinate(11, 14) },
                 new() { Letter = Letter.B, Coordinate = new Coordinate(12, 14) },
                 new() { Letter = Letter.L, Coordinate = new Coordinate(13, 14) },
                 new() { Letter = Letter.E, Coordinate = new Coordinate(14, 14) },
-                
                 new() { Letter = Letter.P, Coordinate = new Coordinate(5, 13) },
                 new() { Letter = Letter.I, Coordinate = new Coordinate(6, 13) },
                 new() { Letter = Letter.N, Coordinate = new Coordinate(7, 13) },
-                
                 new() { Letter = Letter.D, Coordinate = new Coordinate(9, 13) },
                 new() { Letter = Letter.O, Coordinate = new Coordinate(10, 13) },
                 new() { Letter = Letter.G, Coordinate = new Coordinate(11, 13) },
-                
                 new() { Letter = Letter.W, Coordinate = new Coordinate(4, 12) },
                 new() { Letter = Letter.E, Coordinate = new Coordinate(5, 12) },
                 new() { Letter = Letter.N, Coordinate = new Coordinate(6, 12) },
-                
                 new() { Letter = Letter.E, Coordinate = new Coordinate(11, 12) },
                 new() { Letter = Letter.N, Coordinate = new Coordinate(11, 11) },
                 new() { Letter = Letter.D, Coordinate = new Coordinate(11, 10) },
                 new() { Letter = Letter.A, Coordinate = new Coordinate(11, 9) },
                 new() { Letter = Letter.S, Coordinate = new Coordinate(11, 8) },
-                
                 new() { Letter = Letter.A, Coordinate = new Coordinate(6, 8) },
                 new() { Letter = Letter.L, Coordinate = new Coordinate(7, 8) },
                 new() { Letter = Letter.I, Coordinate = new Coordinate(8, 8) },
                 new() { Letter = Letter.E, Coordinate = new Coordinate(9, 8) },
                 new() { Letter = Letter.N, Coordinate = new Coordinate(10, 8) },
-                
                 new() { Letter = Letter.R, Coordinate = new Coordinate(6, 7) },
                 new() { Letter = Letter.F, Coordinate = new Coordinate(6, 6) },
             }

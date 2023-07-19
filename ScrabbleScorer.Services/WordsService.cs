@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using ScrabbleScorer.Core.Constants;
 using ScrabbleScorer.Core.Enums;
 using ScrabbleScorer.Core.Extensions;
@@ -12,7 +13,8 @@ public class WordsService : IWordsService
 {
     public async Task<string[]> FindPossibleWordsAsync(
         string letters,
-        (int position, char letter)[] restrictions
+        (int position, char letter)[] restrictions,
+        int wordLength
     )
     {
         var sortedLetters = letters.ToSortedLetters();
@@ -42,7 +44,8 @@ public class WordsService : IWordsService
                 ? $"w.Word like '{CreateRestrictionQueryString(restrictions, letters.Length)}' and length(w.Word) = {letters.Length}"
                 : "true";
 
-        var query = $"select * from Words w where {restrictionQueryString}";
+        var query =
+            $"select * from Words w where length(w.Word) == {wordLength} and {restrictionQueryString}";
 
         var wordCombinationsPredicate = string.Join(
             " OR ",
@@ -123,14 +126,14 @@ public class WordsService : IWordsService
             .ToArray();
     }
 
-    public async Task<IOrderedEnumerable<TopScoringWordModel>> FindTopScoringWordsAsync(Board board, string letters)
+    public async Task<TopScoringWordModel[]> FindTopScoringWordsAsync(Board board, string letters)
     {
         var validPossibleWords =
             new List<(string word, Coordinate coordinate, Alignment alignment)>();
 
         foreach (
             var wordLength in Enumerable
-                .Range(1, BoardCoordinateConstants.BoardSize - letters.Length + 1)
+                .Range(1, BoardCoordinateConstants.BoardSize)
                 .Reverse()
         )
         {
@@ -145,9 +148,13 @@ public class WordsService : IWordsService
                     wordLength
                 );
 
-                var possibleWords = await FindPossibleWordsAsync(letters, placementRestrictions);
+                var possibleWords = await FindPossibleWordsAsync(
+                    letters,
+                    placementRestrictions,
+                    wordLength
+                );
 
-                foreach (var possibleWord in possibleWords.Where(w => w.Length == wordLength))
+                foreach (var possibleWord in possibleWords)
                 {
                     if (
                         await IsAdjacentWordsValidAsync(
@@ -176,7 +183,7 @@ public class WordsService : IWordsService
                 Coordinate = x.coordinate,
                 Alignment = x.alignment,
             }
-        ).OrderByDescending(x => x.Score);
+        ).OrderByDescending(x => x.Score).Take(3).ToArray();
     }
 
     private async Task<bool> IsAdjacentWordsValidAsync(
