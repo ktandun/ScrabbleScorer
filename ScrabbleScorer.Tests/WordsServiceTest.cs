@@ -1,3 +1,4 @@
+using LazyCache;
 using ScrabbleScorer.Core.Enums;
 using ScrabbleScorer.Core.Models;
 using ScrabbleScorer.Services;
@@ -7,12 +8,18 @@ namespace ScrabbleScorer.Tests;
 
 public class WordsServiceTest
 {
+    private WordsService _wordsService;
+
+    [SetUp]
+    public void Setup()
+    {
+        _wordsService = new WordsService(new CachingService());
+    }
+    
     [Test]
     public async Task FindPossibleWordsTest()
     {
-        var wordsService = new WordsService();
-
-        var words = await wordsService.FindPossibleWordsAsync(
+        var words = await _wordsService.FindPossibleWordsAsync(
             "quebech",
             Array.Empty<(int, char)>(),
             2
@@ -24,9 +31,8 @@ public class WordsServiceTest
     [Test]
     public async Task FindPossibleWordsTest_WithBlankLetter()
     {
-        var wordsService = new WordsService();
 
-        var words = await wordsService.FindPossibleWordsAsync("ca_", Array.Empty<(int, char)>(), 3);
+        var words = await _wordsService.FindPossibleWordsAsync("ca_", Array.Empty<(int, char)>(), 3);
 
         Assert.Multiple(() =>
         {
@@ -39,9 +45,8 @@ public class WordsServiceTest
     [Test]
     public async Task FindPossibleWordsTest_WithRestrictions2()
     {
-        var wordsService = new WordsService();
 
-        var words = await wordsService.FindPossibleWordsAsync(
+        var words = await _wordsService.FindPossibleWordsAsync(
             "atanos",
             new[] { (1, 's'), (3, 'n'), (5, 't') },
             6
@@ -58,9 +63,8 @@ public class WordsServiceTest
     [Test]
     public async Task FindPossibleWordsTest_WithRestrictions()
     {
-        var wordsService = new WordsService();
 
-        var words = await wordsService.FindPossibleWordsAsync("ca_", new[] { (1, 'a') }, 3);
+        var words = await _wordsService.FindPossibleWordsAsync("ca_", new[] { (1, 'a') }, 3);
 
         Assert.Multiple(() =>
         {
@@ -75,7 +79,6 @@ public class WordsServiceTest
     [Test]
     public void FindPossibleWordLocationsTest_MiddleOfBoard()
     {
-        var wordsService = new WordsService();
 
         var board = new Board
         {
@@ -90,7 +93,7 @@ public class WordsServiceTest
             }
         };
 
-        var possibleLocations = wordsService.FindPossibleWordLocations(board, 6);
+        var possibleLocations = _wordsService.FindPossibleWordLocations(board, 6);
 
         Assert.That(possibleLocations.Length, Is.EqualTo(84));
     }
@@ -98,7 +101,6 @@ public class WordsServiceTest
     [Test]
     public void FindPossibleWordLocationsTest_BottomOfBoard()
     {
-        var wordsService = new WordsService();
 
         var board = new Board
         {
@@ -113,7 +115,7 @@ public class WordsServiceTest
             }
         };
 
-        var possibleLocations = wordsService.FindPossibleWordLocations(board, 6);
+        var possibleLocations = _wordsService.FindPossibleWordLocations(board, 6);
 
         Assert.That(possibleLocations.Length, Is.EqualTo(30));
 
@@ -127,7 +129,6 @@ public class WordsServiceTest
     [Test]
     public void FindPossibleWordLocationsTest_TopOfBoard()
     {
-        var wordsService = new WordsService();
 
         var board = new Board
         {
@@ -142,7 +143,7 @@ public class WordsServiceTest
             }
         };
 
-        var possibleLocations = wordsService.FindPossibleWordLocations(board, 6);
+        var possibleLocations = _wordsService.FindPossibleWordLocations(board, 6);
 
         Assert.That(possibleLocations.Length, Is.EqualTo(30));
     }
@@ -150,7 +151,6 @@ public class WordsServiceTest
     [Test]
     public void FindPossibleWordLocationsTest_TopLeftCornerOfBoard()
     {
-        var wordsService = new WordsService();
 
         var board = new Board
         {
@@ -165,7 +165,7 @@ public class WordsServiceTest
             }
         };
 
-        var possibleLocations = wordsService.FindPossibleWordLocations(board, 6);
+        var possibleLocations = _wordsService.FindPossibleWordLocations(board, 6);
 
         Assert.That(possibleLocations.Length, Is.EqualTo(25));
     }
@@ -173,7 +173,6 @@ public class WordsServiceTest
     [Test]
     public void FindPossibleWordLocationsTest_TopRightCornerOfBoard()
     {
-        var wordsService = new WordsService();
 
         var board = new Board
         {
@@ -188,7 +187,7 @@ public class WordsServiceTest
             }
         };
 
-        var possibleLocations = wordsService.FindPossibleWordLocations(board, 6);
+        var possibleLocations = _wordsService.FindPossibleWordLocations(board, 6);
 
         Assert.That(possibleLocations.Length, Is.EqualTo(25));
     }
@@ -196,7 +195,6 @@ public class WordsServiceTest
     [Test]
     public void FindPossibleWordLocationsTest_BottomRightCornerOfBoard()
     {
-        var wordsService = new WordsService();
 
         var board = new Board
         {
@@ -211,7 +209,7 @@ public class WordsServiceTest
             }
         };
 
-        var possibleLocations = wordsService.FindPossibleWordLocations(board, 6);
+        var possibleLocations = _wordsService.FindPossibleWordLocations(board, 6);
 
         Assert.That(possibleLocations.Length, Is.EqualTo(25));
 
@@ -225,7 +223,6 @@ public class WordsServiceTest
     [Test]
     public void FindPossibleWordLocationsTest_BottomLeftCornerOfBoard()
     {
-        var wordsService = new WordsService();
 
         var board = new Board
         {
@@ -240,7 +237,7 @@ public class WordsServiceTest
             }
         };
 
-        var possibleLocations = wordsService.FindPossibleWordLocations(board, 6);
+        var possibleLocations = _wordsService.FindPossibleWordLocations(board, 6);
 
         Assert.That(possibleLocations.Length, Is.EqualTo(25));
     }
@@ -248,7 +245,6 @@ public class WordsServiceTest
     [Test]
     public void FindPossibleWordLocationsTest_MiddleOfBoard_VerticalWord()
     {
-        var wordsService = new WordsService();
 
         var board = new Board
         {
@@ -263,7 +259,7 @@ public class WordsServiceTest
             }
         };
 
-        var possibleLocations = wordsService.FindPossibleWordLocations(board, 6);
+        var possibleLocations = _wordsService.FindPossibleWordLocations(board, 6);
 
         Assert.That(possibleLocations.Length, Is.EqualTo(84));
     }
@@ -285,7 +281,6 @@ public class WordsServiceTest
     [TestCase(15)]
     public void FindPossibleWordLocationsTest_MiddleOfBoard_MultipleWords(int wordLength)
     {
-        var wordsService = new WordsService();
 
         var board = new Board
         {
@@ -304,7 +299,7 @@ public class WordsServiceTest
             }
         };
 
-        var possibleLocations = wordsService.FindPossibleWordLocations(board, wordLength);
+        var possibleLocations = _wordsService.FindPossibleWordLocations(board, wordLength);
 
         DebugUtility.DrawInHtml(
             board.BoardLetters.Select(bl => bl.Coordinate).ToArray(),
@@ -330,7 +325,6 @@ public class WordsServiceTest
     [TestCase(15)]
     public void FindPossibleWordLocationsTest_MiddleOfBoard_MultipleStackingWords(int wordLength)
     {
-        var wordsService = new WordsService();
 
         var board = new Board
         {
@@ -353,7 +347,7 @@ public class WordsServiceTest
             }
         };
 
-        var possibleLocations = wordsService.FindPossibleWordLocations(board, wordLength);
+        var possibleLocations = _wordsService.FindPossibleWordLocations(board, wordLength);
 
         DebugUtility.DrawInHtml(
             board.BoardLetters.Select(bl => bl.Coordinate).ToArray(),
@@ -365,7 +359,6 @@ public class WordsServiceTest
     [Test]
     public async Task FindTopScoringWordsAsyncTest()
     {
-        var wordsService = new WordsService();
 
         var board = new Board
         {
@@ -388,13 +381,12 @@ public class WordsServiceTest
             }
         };
 
-        var wordPlacementModels = await wordsService.FindTopScoringWordsAsync(board, "poo");
+        var wordPlacementModels = await _wordsService.FindTopScoringWordsAsync(board, "poo");
     }
 
     [Test]
     public async Task RealLifeTest()
     {
-        var wordsService = new WordsService();
 
         var board = new Board
         {
@@ -435,6 +427,6 @@ public class WordsServiceTest
             }
         };
 
-        var wordPlacementModels = await wordsService.FindTopScoringWordsAsync(board, "ytgctud");
+        var wordPlacementModels = await _wordsService.FindTopScoringWordsAsync(board, "ytgctud");
     }
 }

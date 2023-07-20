@@ -11,4 +11,8 @@
       <ProjectReference Include="..\ScrabbleScorer.Database\ScrabbleScorer.Database.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="LazyCache" Version="2.4.0" />
+    </ItemGroup>
+
 </Project>

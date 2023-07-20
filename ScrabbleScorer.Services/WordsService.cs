@@ -1,5 +1,5 @@
+using LazyCache;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Memory;
 using ScrabbleScorer.Core.Constants;
 using ScrabbleScorer.Core.Enums;
 using ScrabbleScorer.Core.Extensions;
@@ -11,6 +11,13 @@ namespace ScrabbleScorer.Services;
 
 public class WordsService : IWordsService
 {
+    private readonly IAppCache _appCache;
+
+    public WordsService(IAppCache appCache)
+    {
+        _appCache = appCache;
+    }
+    
     public async Task<string[]> FindPossibleWordsAsync(
         string letters,
         (int position, char letter)[] restrictions,
@@ -37,28 +44,36 @@ public class WordsService : IWordsService
             .Distinct()
             .ToArray();
 
-        await using var database = new DatabaseContext();
-
+        var temp = string.Empty;
+        if (restrictions.Length > 0)
+            temp = CreateRestrictionQueryString(restrictions, letters.Length);
+        
         var restrictionQueryString =
             restrictions.Length > 0
-                ? $"w.Word like '{CreateRestrictionQueryString(restrictions, letters.Length)}' and length(w.Word) = {letters.Length}"
+                ? $"w.Word like '{temp}' and length(w.Word) = {letters.Length}"
                 : "true";
+        
+        return await _appCache.GetOrAddAsync($"{wordLength} {letters} {temp} {letters.Length}", async () =>
+        {
+            await using var database = new DatabaseContext();
+            
+            var query =
+                $"select * from Words w where length(w.Word) == {wordLength} and {restrictionQueryString}";
 
-        var query =
-            $"select * from Words w where length(w.Word) == {wordLength} and {restrictionQueryString}";
+            var wordCombinationsPredicate = string.Join(
+                " OR ",
+                from wc in letterCombinations
+                select $"w.WordSorted like '{wc}'"
+            );
 
-        var wordCombinationsPredicate = string.Join(
-            " OR ",
-            from wc in letterCombinations
-            select $"w.WordSorted like '{wc}'"
-        );
+            var matchingWords = await database.Words
+                .FromSqlRaw($"{query} AND ({wordCombinationsPredicate})")
+                .Select(w => w.Word)
+                .ToArrayAsync();
 
-        var matchingWords = await database.Words
-            .FromSqlRaw($"{query} AND ({wordCombinationsPredicate})")
-            .Select(w => w.Word)
-            .ToArrayAsync();
+            return matchingWords;
+        });
 
-        return matchingWords;
     }
 
     private string CreateRestrictionQueryString(
@@ -228,9 +243,12 @@ public class WordsService : IWordsService
 
         var word = new string(chars);
 
-        await using var database = new DatabaseContext();
+        return await _appCache.GetOrAddAsync(word, async () =>
+        {
+            await using var database = new DatabaseContext();
 
-        return await database.Words.AnyAsync(w => w.Word == word);
+            return await database.Words.AnyAsync(w => w.Word == word);
+        });
     }
 
     private (int position, char letter)[] GetPlacementRestrictions(
