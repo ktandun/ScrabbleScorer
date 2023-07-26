@@ -7,10 +7,11 @@ namespace ScrabbleScorer.Core.Utilities;
 public static class CoordinateUtility
 {
     public static bool CanMakeWordOnCoordinate(
-        Coordinate[] occupiedCoordinates,
+        HashSet<Coordinate> occupiedCoordinates,
         Coordinate coordinate,
         Alignment alignment,
-        int wordLength
+        int wordLength,
+        int lettersOnHandCount
     )
     {
         var lastLetterCoordinate = new Coordinate(
@@ -26,31 +27,34 @@ public static class CoordinateUtility
 
         var isWithinBoardDimensions = true;
         var isAdjacentToOtherWord = false;
-        var hasEmptyCoordinate = false;
+        var hasUnoccupiedCoordinates = false;
 
         while (true)
         {
             delta++;
 
-            if (!hasEmptyCoordinate && !occupiedCoordinates.Contains(currCoordinate))
-                hasEmptyCoordinate = true;
+            if (!occupiedCoordinates.Contains(currCoordinate))
+            {
+                hasUnoccupiedCoordinates = true;
+                lettersOnHandCount--;
+            }
 
             isAdjacentToOtherWord =
                 isAdjacentToOtherWord
                 || IsAdjacentCoordinateHasLetter(occupiedCoordinates, currCoordinate);
 
-            if (delta >= wordLength)
+            if (delta >= wordLength || lettersOnHandCount == 0)
                 break;
 
             if (currCoordinate.Next(alignment, peek: true).IsWithinBoardDimensions())
                 currCoordinate = currCoordinate.Next(alignment);
         }
 
-        return isWithinBoardDimensions && isAdjacentToOtherWord && hasEmptyCoordinate;
+        return isWithinBoardDimensions && isAdjacentToOtherWord && hasUnoccupiedCoordinates;
     }
 
     private static bool IsAdjacentCoordinateHasLetter(
-        Coordinate[] occupiedCoordinates,
+        HashSet<Coordinate> occupiedCoordinates,
         Coordinate coordinate
     ) =>
         occupiedCoordinates.Any(

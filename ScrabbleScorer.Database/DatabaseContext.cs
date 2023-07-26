@@ -7,6 +7,7 @@ namespace ScrabbleScorer.Database;
 public class DatabaseContext : DbContext
 {
     public DbSet<WordEntity> Words { get; set; } = null!;
+    public DbSet<LetterHashEntity> LetterHashes { get; set; } = null!;
 
     private string DbPath { get; }
 

@@ -1,3 +1,4 @@
+using System.Collections.Immutable;
 using LazyCache;
 using Microsoft.EntityFrameworkCore;
 using ScrabbleScorer.Core.Constants;
@@ -17,7 +18,7 @@ public class WordsService : IWordsService
     {
         _appCache = appCache;
     }
-    
+
     public async Task<string[]> FindPossibleWordsAsync(
         string letters,
         (int position, char letter)[] restrictions,
@@ -47,33 +48,35 @@ public class WordsService : IWordsService
         var temp = string.Empty;
         if (restrictions.Length > 0)
             temp = CreateRestrictionQueryString(restrictions, letters.Length);
-        
+
         var restrictionQueryString =
             restrictions.Length > 0
                 ? $"w.Word like '{temp}' and length(w.Word) = {letters.Length}"
                 : "true";
-        
-        return await _appCache.GetOrAddAsync($"{wordLength} {letters} {temp} {letters.Length}", async () =>
-        {
-            await using var database = new DatabaseContext();
-            
-            var query =
-                $"select * from Words w where length(w.Word) == {wordLength} and {restrictionQueryString}";
 
-            var wordCombinationsPredicate = string.Join(
-                " OR ",
-                from wc in letterCombinations
-                select $"w.WordSorted like '{wc}'"
-            );
+        return await _appCache.GetOrAddAsync(
+            $"{wordLength} {letters} {temp} {letters.Length}",
+            async () =>
+            {
+                await using var database = new DatabaseContext();
 
-            var matchingWords = await database.Words
-                .FromSqlRaw($"{query} AND ({wordCombinationsPredicate})")
-                .Select(w => w.Word)
-                .ToArrayAsync();
+                var query =
+                    $"select * from Words w where length(w.Word) == {wordLength} and {restrictionQueryString}";
 
-            return matchingWords;
-        });
+                var wordCombinationsPredicate = string.Join(
+                    " OR ",
+                    from wc in letterCombinations
+                    select $"w.WordSorted like '{wc}'"
+                );
 
+                var matchingWords = await database.Words
+                    .FromSqlRaw($"{query} AND ({wordCombinationsPredicate})")
+                    .Select(w => w.Word)
+                    .ToArrayAsync();
+
+                return matchingWords;
+            }
+        );
     }
 
     private string CreateRestrictionQueryString(
@@ -108,10 +111,11 @@ public class WordsService : IWordsService
 
     public (Coordinate coordinate, Alignment alignment)[] FindPossibleWordLocations(
         Board board,
-        int wordLength
+        int wordLength,
+        int lettersOnHandLength
     )
     {
-        var occupiedCoordinates = board.BoardLetters.Select(bl => bl.Coordinate).ToArray();
+        var occupiedCoordinates = board.BoardLetters.Select(bl => bl.Coordinate).ToHashSet();
 
         return BoardCoordinateConstants.AllCoordinates
             .Where(
@@ -120,7 +124,8 @@ public class WordsService : IWordsService
                         occupiedCoordinates,
                         c,
                         Alignment.Horizontal,
-                        wordLength
+                        wordLength,
+                        lettersOnHandLength
                     )
             )
             .Select(c => (c, Alignment.Horizontal))
@@ -132,7 +137,8 @@ public class WordsService : IWordsService
                                 occupiedCoordinates,
                                 c,
                                 Alignment.Vertical,
-                                wordLength
+                                wordLength,
+                                lettersOnHandLength
                             )
                     )
                     .Select(c => (c, Alignment.Vertical))
@@ -147,12 +153,10 @@ public class WordsService : IWordsService
             new List<(string word, Coordinate coordinate, Alignment alignment)>();
 
         foreach (
-            var wordLength in Enumerable
-                .Range(1, BoardCoordinateConstants.BoardSize)
-                .Reverse()
+            var wordLength in Enumerable.Range(1, BoardCoordinateConstants.BoardSize).Reverse()
         )
         {
-            var possibleLocations = FindPossibleWordLocations(board, wordLength);
+            var possibleLocations = FindPossibleWordLocations(board, wordLength, letters.Length);
 
             foreach (var location in possibleLocations)
             {
@@ -208,8 +212,15 @@ public class WordsService : IWordsService
         string word
     )
     {
-        var bls = BoardUtility.TryPlaceWord(boardLetters, coordinate, alignment, word);
-        var boardLetterCoords = bls.Select(bl => bl.Coordinate).ToArray();
+        var boardLettersAfterPlacement = BoardUtility.TryPlaceWord(
+            boardLetters,
+            coordinate,
+            alignment,
+            word
+        );
+        var boardLetterCoords = boardLettersAfterPlacement
+            .Select(bl => bl.Coordinate)
+            .ToImmutableHashSet();
 
         var wordStartCoord = coordinate.FirstNonBlank(boardLetterCoords, alignment);
         var wordEndCoord = coordinate.LastNonBlank(boardLetterCoords, alignment);
@@ -222,11 +233,23 @@ public class WordsService : IWordsService
             if (start == end)
                 continue;
 
-            if (!await IsValidWordAsync(bls, start, end, alignment.Inverted()))
+            if (
+                !await IsValidWordAsync(
+                    boardLettersAfterPlacement,
+                    start,
+                    end,
+                    alignment.Inverted()
+                )
+            )
                 return false;
         }
 
-        return await IsValidWordAsync(bls, wordStartCoord, wordEndCoord, alignment);
+        return await IsValidWordAsync(
+            boardLettersAfterPlacement,
+            wordStartCoord,
+            wordEndCoord,
+            alignment
+        );
     }
 
     private async Task<bool> IsValidWordAsync(
@@ -243,12 +266,15 @@ public class WordsService : IWordsService
 
         var word = new string(chars);
 
-        return await _appCache.GetOrAddAsync(word, async () =>
-        {
-            await using var database = new DatabaseContext();
+        return await _appCache.GetOrAddAsync(
+            word,
+            async () =>
+            {
+                await using var database = new DatabaseContext();
 
-            return await database.Words.AnyAsync(w => w.Word == word);
-        });
+                return await database.Words.AnyAsync(w => w.Word == word);
+            }
+        );
     }
 
     private (int position, char letter)[] GetPlacementRestrictions(

@@ -7,7 +7,8 @@ public interface IWordsService
 {
     (Coordinate coordinate, Alignment alignment)[] FindPossibleWordLocations(
         Board board,
-        int wordLength
+        int wordLength,
+        int lettersOnHandLength
     );
 
     Task<string[]> FindPossibleWordsAsync(

@@ -1,3 +1,4 @@
+using System.Collections.Immutable;
 using ScrabbleScorer.Core.Constants;
 using ScrabbleScorer.Core.Enums;
 using ScrabbleScorer.Core.Models;
@@ -12,7 +13,7 @@ public static class CoordinateExtensions
 
     public static Coordinate FirstNonBlank(
         this Coordinate coordinate,
-        Coordinate[] occupiedCoordinates,
+        ImmutableHashSet<Coordinate> occupiedCoordinates,
         Alignment alignment
     )
     {
@@ -31,7 +32,7 @@ public static class CoordinateExtensions
 
     public static Coordinate LastNonBlank(
         this Coordinate coordinate,
-        Coordinate[] occupiedCoordinates,
+        ImmutableHashSet<Coordinate> occupiedCoordinates,
         Alignment alignment
     )
     {

@@ -1,3 +1,4 @@
+using System.Collections.Immutable;
 using ScrabbleScorer.Core.Constants;
 using ScrabbleScorer.Core.Enums;
 using ScrabbleScorer.Core.Extensions;
@@ -36,7 +37,7 @@ public static class BoardUtility
 
     public static WordPlacementModel[] GetWordsOnBoard(BoardLetter[] boardLetters)
     {
-        var occupiedCoordinates = boardLetters.Select(bl => bl.Coordinate).ToArray();
+        var occupiedCoordinates = boardLetters.Select(bl => bl.Coordinate).ToImmutableHashSet();
         var alignments = new[] { Alignment.Horizontal, Alignment.Vertical };
 
         return (

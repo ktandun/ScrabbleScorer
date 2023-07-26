@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using LazyCache;
 using ScrabbleScorer.Core.Enums;
 using ScrabbleScorer.Core.Models;
@@ -15,7 +16,7 @@ public class WordsServiceTest
     {
         _wordsService = new WordsService(new CachingService());
     }
-    
+
     [Test]
     public async Task FindPossibleWordsTest()
     {
@@ -31,8 +32,11 @@ public class WordsServiceTest
     [Test]
     public async Task FindPossibleWordsTest_WithBlankLetter()
     {
-
-        var words = await _wordsService.FindPossibleWordsAsync("ca_", Array.Empty<(int, char)>(), 3);
+        var words = await _wordsService.FindPossibleWordsAsync(
+            "ca_",
+            Array.Empty<(int, char)>(),
+            3
+        );
 
         Assert.Multiple(() =>
         {
@@ -45,7 +49,6 @@ public class WordsServiceTest
     [Test]
     public async Task FindPossibleWordsTest_WithRestrictions2()
     {
-
         var words = await _wordsService.FindPossibleWordsAsync(
             "atanos",
             new[] { (1, 's'), (3, 'n'), (5, 't') },
@@ -63,7 +66,6 @@ public class WordsServiceTest
     [Test]
     public async Task FindPossibleWordsTest_WithRestrictions()
     {
-
         var words = await _wordsService.FindPossibleWordsAsync("ca_", new[] { (1, 'a') }, 3);
 
         Assert.Multiple(() =>
@@ -79,7 +81,6 @@ public class WordsServiceTest
     [Test]
     public void FindPossibleWordLocationsTest_MiddleOfBoard()
     {
-
         var board = new Board
         {
             BoardLetters = new BoardLetter[]
@@ -93,7 +94,7 @@ public class WordsServiceTest
             }
         };
 
-        var possibleLocations = _wordsService.FindPossibleWordLocations(board, 6);
+        var possibleLocations = _wordsService.FindPossibleWordLocations(board, 6, 7);
 
         Assert.That(possibleLocations.Length, Is.EqualTo(84));
     }
@@ -101,7 +102,6 @@ public class WordsServiceTest
     [Test]
     public void FindPossibleWordLocationsTest_BottomOfBoard()
     {
-
         var board = new Board
         {
             BoardLetters = new BoardLetter[]
@@ -115,7 +115,7 @@ public class WordsServiceTest
             }
         };
 
-        var possibleLocations = _wordsService.FindPossibleWordLocations(board, 6);
+        var possibleLocations = _wordsService.FindPossibleWordLocations(board, 6, 7);
 
         Assert.That(possibleLocations.Length, Is.EqualTo(30));
 
@@ -129,7 +129,6 @@ public class WordsServiceTest
     [Test]
     public void FindPossibleWordLocationsTest_TopOfBoard()
     {
-
         var board = new Board
         {
             BoardLetters = new BoardLetter[]
@@ -143,7 +142,7 @@ public class WordsServiceTest
             }
         };
 
-        var possibleLocations = _wordsService.FindPossibleWordLocations(board, 6);
+        var possibleLocations = _wordsService.FindPossibleWordLocations(board, 6, 7);
 
         Assert.That(possibleLocations.Length, Is.EqualTo(30));
     }
@@ -151,7 +150,6 @@ public class WordsServiceTest
     [Test]
     public void FindPossibleWordLocationsTest_TopLeftCornerOfBoard()
     {
-
         var board = new Board
         {
             BoardLetters = new BoardLetter[]
@@ -165,7 +163,7 @@ public class WordsServiceTest
             }
         };
 
-        var possibleLocations = _wordsService.FindPossibleWordLocations(board, 6);
+        var possibleLocations = _wordsService.FindPossibleWordLocations(board, 6, 7);
 
         Assert.That(possibleLocations.Length, Is.EqualTo(25));
     }
@@ -173,7 +171,6 @@ public class WordsServiceTest
     [Test]
     public void FindPossibleWordLocationsTest_TopRightCornerOfBoard()
     {
-
         var board = new Board
         {
             BoardLetters = new BoardLetter[]
@@ -187,7 +184,7 @@ public class WordsServiceTest
             }
         };
 
-        var possibleLocations = _wordsService.FindPossibleWordLocations(board, 6);
+        var possibleLocations = _wordsService.FindPossibleWordLocations(board, 6, 7);
 
         Assert.That(possibleLocations.Length, Is.EqualTo(25));
     }
@@ -195,7 +192,6 @@ public class WordsServiceTest
     [Test]
     public void FindPossibleWordLocationsTest_BottomRightCornerOfBoard()
     {
-
         var board = new Board
         {
             BoardLetters = new BoardLetter[]
@@ -209,7 +205,7 @@ public class WordsServiceTest
             }
         };
 
-        var possibleLocations = _wordsService.FindPossibleWordLocations(board, 6);
+        var possibleLocations = _wordsService.FindPossibleWordLocations(board, 6, 7);
 
         Assert.That(possibleLocations.Length, Is.EqualTo(25));
 
@@ -223,7 +219,6 @@ public class WordsServiceTest
     [Test]
     public void FindPossibleWordLocationsTest_BottomLeftCornerOfBoard()
     {
-
         var board = new Board
         {
             BoardLetters = new BoardLetter[]
@@ -237,7 +232,7 @@ public class WordsServiceTest
             }
         };
 
-        var possibleLocations = _wordsService.FindPossibleWordLocations(board, 6);
+        var possibleLocations = _wordsService.FindPossibleWordLocations(board, 6, 7);
 
         Assert.That(possibleLocations.Length, Is.EqualTo(25));
     }
@@ -245,7 +240,6 @@ public class WordsServiceTest
     [Test]
     public void FindPossibleWordLocationsTest_MiddleOfBoard_VerticalWord()
     {
-
         var board = new Board
         {
             BoardLetters = new BoardLetter[]
@@ -259,7 +253,7 @@ public class WordsServiceTest
             }
         };
 
-        var possibleLocations = _wordsService.FindPossibleWordLocations(board, 6);
+        var possibleLocations = _wordsService.FindPossibleWordLocations(board, 6, 7);
 
         Assert.That(possibleLocations.Length, Is.EqualTo(84));
     }
@@ -281,7 +275,6 @@ public class WordsServiceTest
     [TestCase(15)]
     public void FindPossibleWordLocationsTest_MiddleOfBoard_MultipleWords(int wordLength)
     {
-
         var board = new Board
         {
             BoardLetters = new BoardLetter[]
@@ -299,7 +292,7 @@ public class WordsServiceTest
             }
         };
 
-        var possibleLocations = _wordsService.FindPossibleWordLocations(board, wordLength);
+        var possibleLocations = _wordsService.FindPossibleWordLocations(board, 6, 7);
 
         DebugUtility.DrawInHtml(
             board.BoardLetters.Select(bl => bl.Coordinate).ToArray(),
@@ -325,7 +318,6 @@ public class WordsServiceTest
     [TestCase(15)]
     public void FindPossibleWordLocationsTest_MiddleOfBoard_MultipleStackingWords(int wordLength)
     {
-
         var board = new Board
         {
             BoardLetters = new BoardLetter[]
@@ -347,7 +339,7 @@ public class WordsServiceTest
             }
         };
 
-        var possibleLocations = _wordsService.FindPossibleWordLocations(board, wordLength);
+        var possibleLocations = _wordsService.FindPossibleWordLocations(board, 6, 7);
 
         DebugUtility.DrawInHtml(
             board.BoardLetters.Select(bl => bl.Coordinate).ToArray(),
@@ -359,7 +351,6 @@ public class WordsServiceTest
     [Test]
     public async Task FindTopScoringWordsAsyncTest()
     {
-
         var board = new Board
         {
             BoardLetters = new BoardLetter[]
@@ -387,7 +378,6 @@ public class WordsServiceTest
     [Test]
     public async Task RealLifeTest()
     {
-
         var board = new Board
         {
             BoardLetters = new BoardLetter[]
@@ -427,6 +417,135 @@ public class WordsServiceTest
             }
         };
 
+        var stopwatch = new Stopwatch();
+
+        stopwatch.Start();
         var wordPlacementModels = await _wordsService.FindTopScoringWordsAsync(board, "ytgctud");
+        stopwatch.Stop();
+
+        Assert.That(wordPlacementModels.First().Word, Is.EqualTo("DUCT"));
+        Assert.That(stopwatch.ElapsedMilliseconds, Is.LessThan(5_000));
+    }
+
+    [Test]
+    public async Task RealLifeTest2()
+    {
+        var board = new Board
+        {
+            BoardLetters = new BoardLetter[]
+            {
+                new() { Letter = Letter.A, Coordinate = new Coordinate(7, 8) },
+                new() { Letter = Letter.A, Coordinate = new Coordinate(8, 8) },
+                new() { Letter = Letter.J, Coordinate = new Coordinate(7, 9) },
+                new() { Letter = Letter.R, Coordinate = new Coordinate(7, 7) },
+            }
+        };
+
+        var wordPlacementModels = await _wordsService.FindTopScoringWordsAsync(board, "uisexvu");
+
+        Assert.That(wordPlacementModels.First().Word, Is.EqualTo("DUCT"));
+    }
+
+    [Test]
+    public async Task RealLifeTest3()
+    {
+        var board = new Board
+        {
+            BoardLetters = new BoardLetter[]
+            {
+                new() { Letter = Letter.D, Coordinate = new Coordinate(5, 8) },
+                new() { Letter = Letter.I, Coordinate = new Coordinate(6, 8) },
+                new() { Letter = Letter.N, Coordinate = new Coordinate(7, 8) },
+                new() { Letter = Letter.E, Coordinate = new Coordinate(8, 8) },
+                new() { Letter = Letter.H, Coordinate = new Coordinate(6, 9) },
+                new() { Letter = Letter.O, Coordinate = new Coordinate(7, 9) },
+                new() { Letter = Letter.W, Coordinate = new Coordinate(8, 9) },
+                new() { Letter = Letter.F, Coordinate = new Coordinate(9, 9) },
+                new() { Letter = Letter.U, Coordinate = new Coordinate(7, 12) },
+                new() { Letter = Letter.N, Coordinate = new Coordinate(7, 11) },
+                new() { Letter = Letter.I, Coordinate = new Coordinate(7, 10) },
+                new() { Letter = Letter.V, Coordinate = new Coordinate(5, 11) },
+                new() { Letter = Letter.A, Coordinate = new Coordinate(6, 11) },
+                new() { Letter = Letter.O, Coordinate = new Coordinate(8, 15) },
+                new() { Letter = Letter.A, Coordinate = new Coordinate(8, 14) },
+                new() { Letter = Letter.T, Coordinate = new Coordinate(8, 13) },
+                new() { Letter = Letter.H, Coordinate = new Coordinate(8, 12) },
+                new() { Letter = Letter.O, Coordinate = new Coordinate(9, 10) },
+                new() { Letter = Letter.V, Coordinate = new Coordinate(10, 10) },
+                new() { Letter = Letter.O, Coordinate = new Coordinate(11, 10) },
+                new() { Letter = Letter.I, Coordinate = new Coordinate(12, 10) },
+                new() { Letter = Letter.D, Coordinate = new Coordinate(13, 10) },
+                new() { Letter = Letter.L, Coordinate = new Coordinate(11, 11) },
+                new() { Letter = Letter.N, Coordinate = new Coordinate(11, 9) },
+                new() { Letter = Letter.E, Coordinate = new Coordinate(11, 8) },
+                new() { Letter = Letter.B, Coordinate = new Coordinate(10, 12) },
+                new() { Letter = Letter.A, Coordinate = new Coordinate(11, 12) },
+                new() { Letter = Letter.R, Coordinate = new Coordinate(12, 12) },
+                new() { Letter = Letter.M, Coordinate = new Coordinate(13, 12) },
+                new() { Letter = Letter.B, Coordinate = new Coordinate(10, 8) },
+                new() { Letter = Letter.A, Coordinate = new Coordinate(10, 7) },
+                new() { Letter = Letter.N, Coordinate = new Coordinate(10, 6) },
+                new() { Letter = Letter.L, Coordinate = new Coordinate(12, 8) },
+                new() { Letter = Letter.I, Coordinate = new Coordinate(12, 7) },
+                new() { Letter = Letter.T, Coordinate = new Coordinate(12, 6) },
+                new() { Letter = Letter.T, Coordinate = new Coordinate(12, 5) },
+                new() { Letter = Letter.E, Coordinate = new Coordinate(12, 4) },
+                new() { Letter = Letter.R, Coordinate = new Coordinate(12, 3) },
+                new() { Letter = Letter.S, Coordinate = new Coordinate(13, 14) },
+                new() { Letter = Letter.I, Coordinate = new Coordinate(13, 13) },
+                new() { Letter = Letter.J, Coordinate = new Coordinate(5, 5) },
+                new() { Letter = Letter.U, Coordinate = new Coordinate(6, 5) },
+                new() { Letter = Letter.G, Coordinate = new Coordinate(7, 5) },
+                new() { Letter = Letter.A, Coordinate = new Coordinate(8, 5) },
+                new() { Letter = Letter.T, Coordinate = new Coordinate(9, 5) },
+                new() { Letter = Letter.E, Coordinate = new Coordinate(10, 5) },
+                new() { Letter = Letter.A, Coordinate = new Coordinate(10, 14) },
+                new() { Letter = Letter.I, Coordinate = new Coordinate(11, 14) },
+                new() { Letter = Letter.L, Coordinate = new Coordinate(12, 14) },
+                new() { Letter = Letter.S, Coordinate = new Coordinate(12, 2) },
+                new() { Letter = Letter.K, Coordinate = new Coordinate(13, 2) },
+                new() { Letter = Letter.R, Coordinate = new Coordinate(14, 2) },
+                new() { Letter = Letter.Y, Coordinate = new Coordinate(15, 2) },
+                new() { Letter = Letter.C, Coordinate = new Coordinate(5, 14) },
+                new() { Letter = Letter.O, Coordinate = new Coordinate(6, 14) },
+                new() { Letter = Letter.C, Coordinate = new Coordinate(7, 14) },
+                new() { Letter = Letter.D, Coordinate = new Coordinate(8, 4) },
+                new() { Letter = Letter.O, Coordinate = new Coordinate(8, 3) },
+                new() { Letter = Letter.W, Coordinate = new Coordinate(8, 2) },
+                new() { Letter = Letter.N, Coordinate = new Coordinate(8, 1) },
+                new() { Letter = Letter.P, Coordinate = new Coordinate(5, 1) },
+                new() { Letter = Letter.R, Coordinate = new Coordinate(6, 1) },
+                new() { Letter = Letter.E, Coordinate = new Coordinate(7, 1) },
+                new() { Letter = Letter.U, Coordinate = new Coordinate(9, 1) },
+                new() { Letter = Letter.P, Coordinate = new Coordinate(10, 1) },
+                new() { Letter = Letter.S, Coordinate = new Coordinate(13, 8) },
+                new() { Letter = Letter.T, Coordinate = new Coordinate(13, 7) },
+                new() { Letter = Letter.A, Coordinate = new Coordinate(13, 6) },
+                new() { Letter = Letter.I, Coordinate = new Coordinate(13, 5) },
+                new() { Letter = Letter.R, Coordinate = new Coordinate(13, 4) },
+                new() { Letter = Letter.Y, Coordinate = new Coordinate(6, 3) },
+                new() { Letter = Letter.E, Coordinate = new Coordinate(6, 2) },
+                new() { Letter = Letter.Z, Coordinate = new Coordinate(2, 4) },
+                new() { Letter = Letter.E, Coordinate = new Coordinate(3, 4) },
+                new() { Letter = Letter.R, Coordinate = new Coordinate(4, 4) },
+                new() { Letter = Letter.O, Coordinate = new Coordinate(5, 4) },
+                new() { Letter = Letter.A, Coordinate = new Coordinate(14, 4) },
+                new() { Letter = Letter.I, Coordinate = new Coordinate(14, 3) },
+                new() { Letter = Letter.A, Coordinate = new Coordinate(2, 3) },
+                new() { Letter = Letter.X, Coordinate = new Coordinate(3, 3) },
+                new() { Letter = Letter.E, Coordinate = new Coordinate(4, 3) },
+                new() { Letter = Letter.W, Coordinate = new Coordinate(6, 15) },
+                new() { Letter = Letter.E, Coordinate = new Coordinate(6, 13) },
+                new() { Letter = Letter.A, Coordinate = new Coordinate(13, 1) },
+                new() { Letter = Letter.T, Coordinate = new Coordinate(14, 1) },
+                new() { Letter = Letter.E, Coordinate = new Coordinate(15, 1) },
+                new() { Letter = Letter.E, Coordinate = new Coordinate(5, 12) },
+                new() { Letter = Letter.E, Coordinate = new Coordinate(5, 10) },
+            }
+        };
+
+        var wordPlacementModels = await _wordsService.FindTopScoringWordsAsync(board, "lmsfdon");
+
+        Assert.That(wordPlacementModels.First().Word, Is.EqualTo("DUCT"));
     }
 }

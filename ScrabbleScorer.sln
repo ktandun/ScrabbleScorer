@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScrabbleScorer", "ScrabbleScorer\ScrabbleScorer.csproj", "{57EA888D-6D18-43A9-BD19-3F392F079F90}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScrabbleScorer.Seeder", "ScrabbleScorer.Seeder\ScrabbleScorer.Seeder.csproj", "{57EA888D-6D18-43A9-BD19-3F392F079F90}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScrabbleScorer.Core", "ScrabbleScorer.Core\ScrabbleScorer.Core.csproj", "{221A6C6B-07B4-49C2-98B2-69D34ABA7F73}"
 EndProject
@@ -9,6 +9,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScrabbleScorer.Database", "ScrabbleScorer.Database\ScrabbleScorer.Database.csproj", "{0C519BDF-BD50-4287-BCA5-7B77F776419D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScrabbleScorer.Services", "ScrabbleScorer.Services\ScrabbleScorer.Services.csproj", "{61F15BE5-70AE-4246-9252-0C3C197D4B66}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScrabbleScorer.ImageProcessing", "ScrabbleScorer.ImageProcessing\ScrabbleScorer.ImageProcessing.csproj", "{A3300D86-F849-482D-A751-0E4A31927E94}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -36,5 +38,9 @@ Global
 		{61F15BE5-70AE-4246-9252-0C3C197D4B66}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{61F15BE5-70AE-4246-9252-0C3C197D4B66}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{61F15BE5-70AE-4246-9252-0C3C197D4B66}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A3300D86-F849-482D-A751-0E4A31927E94}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A3300D86-F849-482D-A751-0E4A31927E94}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A3300D86-F849-482D-A751-0E4A31927E94}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A3300D86-F849-482D-A751-0E4A31927E94}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
