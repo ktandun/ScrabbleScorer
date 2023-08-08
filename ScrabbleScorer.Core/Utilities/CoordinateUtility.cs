@@ -28,10 +28,16 @@ public static class CoordinateUtility
         var isWithinBoardDimensions = true;
         var isAdjacentToOtherWord = false;
         var hasUnoccupiedCoordinates = false;
+        var isBoardEmpty = occupiedCoordinates.Count == 0;
+        var isPassingMiddlePoint = false;
+        var middlePoint = new Coordinate(8, 8);
 
         while (true)
         {
             delta++;
+
+            if (currCoordinate == middlePoint)
+                isPassingMiddlePoint = true;
 
             if (!occupiedCoordinates.Contains(currCoordinate))
             {
@@ -50,7 +56,9 @@ public static class CoordinateUtility
                 currCoordinate = currCoordinate.Next(alignment);
         }
 
-        return isWithinBoardDimensions && isAdjacentToOtherWord && hasUnoccupiedCoordinates;
+        return isBoardEmpty
+            ? isPassingMiddlePoint && isWithinBoardDimensions
+            : isWithinBoardDimensions && isAdjacentToOtherWord && hasUnoccupiedCoordinates;
     }
 
     private static bool IsAdjacentCoordinateHasLetter(
