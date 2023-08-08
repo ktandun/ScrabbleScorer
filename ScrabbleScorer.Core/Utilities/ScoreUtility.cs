@@ -7,7 +7,7 @@ namespace ScrabbleScorer.Core.Utilities;
 
 public static class ScoreUtility
 {
-    public static int CalculateScore(string letters, BonusType[]? bonuses = null)
+    public static int CalculateScore(string letters, BonusType[]? bonuses, bool isBingo)
     {
         if (bonuses is not null)
             Debug.Assert(letters.Length == bonuses.Length);
@@ -44,7 +44,9 @@ public static class ScoreUtility
             }
         }
 
-        return multiplier * sum;
+        var bingoScore = isBingo ? 50 : 0;
+
+        return multiplier * sum + bingoScore;
     }
 
     public static int CalculateScore(
@@ -55,7 +57,7 @@ public static class ScoreUtility
     )
     {
         var boardLetterCoordinates = board.BoardLetters.Select(bl => bl.Coordinate).ToArray();
-        var boardLetterAfterPlacement = BoardUtility.TryPlaceWord(
+        var (boardLetterAfterPlacement, isBingo) = BoardUtility.TryPlaceWord(
             board.BoardLetters,
             coordinate,
             alignment,
@@ -77,7 +79,7 @@ public static class ScoreUtility
                         .FirstOrDefault(bt => bt.Coordinate == c)
                         ?.BonusType ?? BonusType.None;
             })
-            select CalculateScore(wordPlacement.Word, bonusTypes.ToArray())
+            select CalculateScore(wordPlacement.Word, bonusTypes.ToArray(), isBingo)
         ).Sum();
     }
 }

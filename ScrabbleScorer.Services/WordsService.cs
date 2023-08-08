@@ -7,6 +7,7 @@ using ScrabbleScorer.Core.Extensions;
 using ScrabbleScorer.Core.Models;
 using ScrabbleScorer.Core.Utilities;
 using ScrabbleScorer.Database;
+using ScrabbleScorer.ImageProcessing;
 
 namespace ScrabbleScorer.Services;
 
@@ -153,7 +154,7 @@ public class WordsService : IWordsService
             new List<(string word, Coordinate coordinate, Alignment alignment)>();
 
         foreach (
-            var wordLength in Enumerable.Range(1, BoardCoordinateConstants.BoardSize).Reverse()
+            var wordLength in Enumerable.Range(2, BoardCoordinateConstants.BoardSize - 1).Reverse()
         )
         {
             var possibleLocations = FindPossibleWordLocations(board, wordLength, letters.Length);
@@ -202,7 +203,7 @@ public class WordsService : IWordsService
                 Coordinate = x.coordinate,
                 Alignment = x.alignment,
             }
-        ).OrderByDescending(x => x.Score).Take(3).ToArray();
+        ).OrderByDescending(x => x.Score).ToArray();
     }
 
     private async Task<bool> IsAdjacentWordsValidAsync(
@@ -212,12 +213,13 @@ public class WordsService : IWordsService
         string word
     )
     {
-        var boardLettersAfterPlacement = BoardUtility.TryPlaceWord(
+        var (boardLettersAfterPlacement, _) = BoardUtility.TryPlaceWord(
             boardLetters,
             coordinate,
             alignment,
             word
         );
+        
         var boardLetterCoords = boardLettersAfterPlacement
             .Select(bl => bl.Coordinate)
             .ToImmutableHashSet();

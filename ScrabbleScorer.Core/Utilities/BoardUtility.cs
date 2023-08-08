@@ -8,7 +8,7 @@ namespace ScrabbleScorer.Core.Utilities;
 
 public static class BoardUtility
 {
-    public static BoardLetter[] TryPlaceWord(
+    public static (BoardLetter[], bool isBingo) TryPlaceWord(
         BoardLetter[] occupiedCoordinates,
         Coordinate coordinate,
         Alignment alignment,
@@ -18,21 +18,28 @@ public static class BoardUtility
         var tempBoardLetters = occupiedCoordinates.ToList();
 
         var currCoordinate = coordinate;
+        var lettersPutDown = 0;
 
         for (var i = 0; i < letters.Length; i++)
         {
             var letter = letters[i];
 
             if (tempBoardLetters.All(bl => bl.Coordinate != currCoordinate))
+            {
                 tempBoardLetters.Add(
                     new BoardLetter { Letter = letter.ToLetter(), Coordinate = currCoordinate }
                 );
+                
+                lettersPutDown++;
+            }
 
             if (i != letters.Length - 1)
                 currCoordinate = currCoordinate.Next(alignment);
         }
 
-        return tempBoardLetters.ToArray();
+        var isBingo = lettersPutDown == 7;
+
+        return (tempBoardLetters.ToArray(), isBingo);
     }
 
     public static WordPlacementModel[] GetWordsOnBoard(BoardLetter[] boardLetters)
