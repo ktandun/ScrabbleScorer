@@ -4,7 +4,7 @@ namespace ScrabbleScorer.Core.Logic.Rules;
 
 public class WordShouldFitInsideBoard : IPlacementRule
 {
-    public bool Validate(Board board, PlacementModel placement)
+    public Task<bool> ValidateAsync(Board board, PlacementModel placement)
     {
         var currentCoordinate = placement.Coordinate;
 
@@ -12,18 +12,16 @@ public class WordShouldFitInsideBoard : IPlacementRule
         {
             var letter = board.GetLetterInCoordinate(currentCoordinate);
 
-            if (letter is not null)
-            {
-                i--;
-            }
+            if (letter is not null) i--;
 
             currentCoordinate = currentCoordinate.NextTile(placement.Alignment);
         }
 
-        return currentCoordinate
-            is {
+        return Task.FromResult(currentCoordinate
+            is
+            {
                 X: <= BoardCoordinateConstants.BoardSize,
                 Y: <= BoardCoordinateConstants.BoardSize
-            };
+            });
     }
 }

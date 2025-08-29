@@ -1,6 +1,6 @@
 namespace ScrabbleScorer.Core.Constants;
 
-public class CacheKeys
+public static class CacheKeys
 {
     public const string Words = "Words";
 }

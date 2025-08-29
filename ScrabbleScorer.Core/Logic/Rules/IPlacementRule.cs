@@ -2,7 +2,7 @@ namespace ScrabbleScorer.Core.Logic.Rules;
 
 public interface IPlacementRule
 {
-    bool Validate(Board board, PlacementModel placement);
+    Task<bool> ValidateAsync(Board board, PlacementModel placement);
 }
 
 public record PlacementModel

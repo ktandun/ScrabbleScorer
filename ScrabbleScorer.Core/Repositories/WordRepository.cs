@@ -10,6 +10,7 @@ public interface IWordRepository
 
 public class WordRepository : IWordRepository
 {
+    private const string WordsFile = "./Repositories/words.txt";
     private readonly IMemoryCache _cache;
 
     public WordRepository(IMemoryCache cache)
@@ -21,10 +22,12 @@ public class WordRepository : IWordRepository
     {
         if (_cache.TryGetValue(CacheKeys.Words, out var words)
             && words?.GetType() == typeof(List<string>))
-        {
             return new DictionaryWords((List<string>)words);
-        }
 
-        return null;
+        var allScrabbleWords = await File.ReadAllLinesAsync(WordsFile);
+
+        _cache.Set(CacheKeys.Words, allScrabbleWords);
+
+        return new DictionaryWords(allScrabbleWords);
     }
 }

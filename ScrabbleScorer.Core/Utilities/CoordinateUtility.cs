@@ -1,6 +1,4 @@
-using ScrabbleScorer.Core.Enums;
 using ScrabbleScorer.Core.Extensions;
-using ScrabbleScorer.Core.Models;
 
 namespace ScrabbleScorer.Core.Utilities;
 
@@ -52,7 +50,7 @@ public static class CoordinateUtility
             if (delta >= wordLength || lettersOnHandCount == 0)
                 break;
 
-            if (currCoordinate.Next(alignment, peek: true).IsWithinBoardDimensions())
+            if (currCoordinate.Next(alignment, true).IsWithinBoardDimensions())
                 currCoordinate = currCoordinate.Next(alignment);
         }
 
@@ -64,12 +62,14 @@ public static class CoordinateUtility
     private static bool IsAdjacentCoordinateHasLetter(
         HashSet<Coordinate> occupiedCoordinates,
         Coordinate coordinate
-    ) =>
-        occupiedCoordinates.Any(
+    )
+    {
+        return occupiedCoordinates.Any(
             c =>
                 c == new Coordinate(coordinate.X + 1, coordinate.Y)
                 || c == new Coordinate(coordinate.X - 1, coordinate.Y)
                 || c == new Coordinate(coordinate.X, coordinate.Y + 1)
                 || c == new Coordinate(coordinate.X, coordinate.Y - 1)
         );
+    }
 }

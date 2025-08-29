@@ -97,13 +97,14 @@ public static class LetterExtensions
             Letter.X => 'X',
             Letter.Y => 'Y',
             Letter.Z => 'Z',
-            Letter.Blank => throw new Exception("Unable to convert blank to char"),
+            Letter.Blank => '_',
             _ => throw new ArgumentOutOfRangeException(nameof(letter), letter, null)
         };
     }
 
-    public static Letter ToLetter(this char letter) =>
-        letter switch
+    public static Letter ToLetter(this char letter)
+    {
+        return letter switch
         {
             '_' => Letter.Blank,
             'A' => Letter.A,
@@ -160,9 +161,11 @@ public static class LetterExtensions
             'z' => Letter.Z,
             _ => throw new ArgumentOutOfRangeException(nameof(letter), letter, null)
         };
+    }
 
-    public static int ToLetterValue(this char letter) =>
-        letter switch
+    public static int ToLetterValue(this char letter)
+    {
+        return letter switch
         {
             '_' => 0,
             'A' => 1,
@@ -193,4 +196,5 @@ public static class LetterExtensions
             'Z' => 10,
             _ => throw new ArgumentOutOfRangeException(nameof(letter), letter, null)
         };
+    }
 }

@@ -1,15 +1,15 @@
 using System.Collections.Immutable;
 using ScrabbleScorer.Core.Constants;
-using ScrabbleScorer.Core.Enums;
-using ScrabbleScorer.Core.Models;
 
 namespace ScrabbleScorer.Core.Extensions;
 
 public static class CoordinateExtensions
 {
-    public static bool IsWithinBoardDimensions(this Coordinate coordinate) =>
-        coordinate.X is >= 1 and <= BoardCoordinateConstants.BoardSize
-        && coordinate.Y is >= 1 and <= BoardCoordinateConstants.BoardSize;
+    public static bool IsWithinBoardDimensions(this Coordinate coordinate)
+    {
+        return coordinate.X is >= 1 and <= BoardCoordinateConstants.BoardSize
+               && coordinate.Y is >= 1 and <= BoardCoordinateConstants.BoardSize;
+    }
 
     public static Coordinate FirstNonBlank(
         this Coordinate coordinate,
@@ -19,7 +19,7 @@ public static class CoordinateExtensions
     {
         var currCoordinate = coordinate;
 
-        while (currCoordinate.Prev(alignment, peek: true).IsWithinBoardDimensions())
+        while (currCoordinate.Prev(alignment, true).IsWithinBoardDimensions())
         {
             if (!occupiedCoordinates.Contains(currCoordinate.Prev(alignment)))
                 break;
@@ -38,7 +38,7 @@ public static class CoordinateExtensions
     {
         var currCoordinate = coordinate;
 
-        while (currCoordinate.Next(alignment, peek: true).IsWithinBoardDimensions())
+        while (currCoordinate.Next(alignment, true).IsWithinBoardDimensions())
         {
             if (!occupiedCoordinates.Contains(currCoordinate.Next(alignment)))
                 break;

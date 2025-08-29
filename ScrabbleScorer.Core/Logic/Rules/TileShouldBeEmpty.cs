@@ -2,10 +2,10 @@ namespace ScrabbleScorer.Core.Logic.Rules;
 
 public class TileShouldBeEmpty : IPlacementRule
 {
-    public bool Validate(Board board, PlacementModel placement)
+    public Task<bool> ValidateAsync(Board board, PlacementModel placement)
     {
         var letter = board.GetLetterInCoordinate(placement.Coordinate);
 
-        return letter is null;
+        return Task.FromResult(letter is null);
     }
 }

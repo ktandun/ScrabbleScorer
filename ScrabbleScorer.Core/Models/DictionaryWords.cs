@@ -1,3 +1,3 @@
 namespace ScrabbleScorer.Core.Models;
 
-public record DictionaryWords(List<string> Words);
+public record DictionaryWords(IEnumerable<string> Words);

@@ -1,10 +1,22 @@
+using ScrabbleScorer.Core.Repositories;
+using ScrabbleScorer.Core.Utilities;
+
 namespace ScrabbleScorer.Core.Logic.Rules;
 
 public class WordCreatedShouldBeValid : IPlacementRule
 {
-    public bool Validate(Board board, PlacementModel placement)
+    private readonly IWordRepository _wordRepository;
+
+    public WordCreatedShouldBeValid(IWordRepository wordRepository)
     {
-        var wordCreated = new List<Letter>();
+        _wordRepository = wordRepository;
+    }
+
+    public async Task<bool> ValidateAsync(Board board, PlacementModel placement)
+    {
+        var validWords = await _wordRepository.ReadWordsAsync();
+
+        var letters = new List<Letter>();
         var currentCoordinate = placement.Coordinate;
 
         for (var i = 0; i < placement.Letters.Count; i++)
@@ -13,19 +25,18 @@ public class WordCreatedShouldBeValid : IPlacementRule
 
             if (letter is not null)
             {
-                wordCreated.Add(letter.Value);
+                letters.Add(letter.Value);
                 i--;
             }
             else
             {
-                wordCreated.Add(placement.Letters[i]);
+                letters.Add(placement.Letters[i]);
             }
 
             currentCoordinate = currentCoordinate.NextTile(placement.Alignment);
         }
 
-        var word = new string(wordCreated.Select(l => l.ToChar()).ToArray());
-        var validWords = new List<string> { "valid" }; // todo: get dictionary words
+        var word = letters.ToWord();
 
         return validWords.Contains(word);
     }

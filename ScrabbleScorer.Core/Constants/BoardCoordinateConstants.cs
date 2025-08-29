@@ -83,6 +83,6 @@ public static class BoardCoordinateConstants
         new() { Coordinate = new Coordinate(4, 12), BonusType = BonusType.DoubleWord },
         new() { Coordinate = new Coordinate(12, 12), BonusType = BonusType.DoubleWord },
         new() { Coordinate = new Coordinate(5, 11), BonusType = BonusType.DoubleWord },
-        new() { Coordinate = new Coordinate(11, 11), BonusType = BonusType.DoubleWord },
+        new() { Coordinate = new Coordinate(11, 11), BonusType = BonusType.DoubleWord }
     };
 }

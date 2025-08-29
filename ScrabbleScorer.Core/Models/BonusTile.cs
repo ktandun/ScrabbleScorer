@@ -1,5 +1,3 @@
-using ScrabbleScorer.Core.Enums;
-
 namespace ScrabbleScorer.Core.Models;
 
 public record BonusTile

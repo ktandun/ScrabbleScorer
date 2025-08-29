@@ -1,11 +1,13 @@
 namespace ScrabbleScorer.Core.Models;
 
-public record Board()
+public record Board
 {
     public required BoardLetter[] BoardLetters { get; init; }
 
-    public Letter? GetLetterInCoordinate(Coordinate coordinate) =>
-        BoardLetters.SingleOrDefault(x => x.Coordinate == coordinate)?.Letter;
+    public Letter? GetLetterInCoordinate(Coordinate coordinate)
+    {
+        return BoardLetters.SingleOrDefault(x => x.Coordinate == coordinate)?.Letter;
+    }
 }
 
 public record BoardLetter

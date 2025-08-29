@@ -1,6 +1,5 @@
 using HandlebarsDotNet;
 using ScrabbleScorer.Core.Enums;
-using ScrabbleScorer.Core.Models;
 
 namespace ScrabbleScorer.Tests.Utilities;
 
@@ -94,17 +93,17 @@ public static class DebugUtility
                 select new
                 {
                     BothVerticalHorizontal = possibleCoords.Any(
-                        c =>
-                            c.coordinate.X == x
-                            && c.coordinate.Y == y
-                            && c.alignment == Alignment.Horizontal
-                    )
-                        && possibleCoords.Any(
-                            c =>
-                                c.coordinate.X == x
-                                && c.coordinate.Y == y
-                                && c.alignment == Alignment.Vertical
-                        ),
+                                                 c =>
+                                                     c.coordinate.X == x
+                                                     && c.coordinate.Y == y
+                                                     && c.alignment == Alignment.Horizontal
+                                             )
+                                             && possibleCoords.Any(
+                                                 c =>
+                                                     c.coordinate.X == x
+                                                     && c.coordinate.Y == y
+                                                     && c.alignment == Alignment.Vertical
+                                             ),
                     Vertical = possibleCoords.Any(
                         c =>
                             c.coordinate.X == x
