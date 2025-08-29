@@ -20,6 +20,69 @@ public class WordsService : IWordsService
         _appCache = appCache;
     }
 
+    public async Task<BoardLetter[]> ReadBoardFromScreenshotAsync(string screenshotFile)
+    {
+        using var boardSectionBitmap = ImageUtility.CropBoardSectionFromScreenshot(screenshotFile);
+        using var boardPartMonochrome = ImageUtility.ConvertToMonochromeWithContrast(boardSectionBitmap, 1.1f);
+        using var boardBlackAndWhite = ImageUtility.RemoveColorsFromImage(boardPartMonochrome);
+        
+        await using var database = new DatabaseContext();
+
+        var letterHashes = await database.LetterHashes
+            .Select(l => new { Letter = l.Letter, Hash = ImageUtility.ImageHashFromString(l.Hash) })
+            .ToArrayAsync();
+
+        var foundLetters = new List<BoardLetter>();
+        
+        const int n = 15;
+        
+        for (var i = 0; i < n; i++)
+        {
+            for (var j = 0; j < n; j++)
+            {
+                using var boardPart = ImageUtility.SplitBoardImage(
+                    boardBlackAndWhite,
+                    i,
+                    j,
+                    76
+                );
+
+                using var boardPartCropped = ImageUtility.CropImage(boardPart, 8, 8, 42, 59);
+                using var boardPartOnlyLetter = ImageUtility.CropOuterWhiteRegion(boardPartCropped);
+                using var boardPartOnlyLetterPadded = ImageUtility.AddPaddingWithWhiteBackground(boardPartOnlyLetter, 64);
+                
+                if (!ImageUtility.IsEmptyImage(boardPartOnlyLetter))
+                {
+                    var imageHash = ImageUtility.GenerateImageHash(boardPartOnlyLetterPadded);
+                    
+                    var matchingLetter = letterHashes.MaxBy(
+                        lh =>
+                            ImageUtility.CalculateImageHashSimilarity(
+                                lh.Hash,
+                                imageHash
+                            )
+                    );
+                    
+                    if (matchingLetter is not null)
+                    {
+                        foundLetters.Add(new BoardLetter
+                        {
+                            Letter = matchingLetter.Letter.ToLetter(),
+                            Coordinate = GetCoordinateFromScreenshot(i, j)
+                        });
+                    }
+                }
+            }
+        }
+
+        return foundLetters.ToArray();
+    }
+
+    private Coordinate GetCoordinateFromScreenshot(int i, int j)
+    {
+        return new Coordinate(BoardCoordinateConstants.BoardSize - i, BoardCoordinateConstants.BoardSize - j);
+    }
+
     public async Task<string[]> FindPossibleWordsAsync(
         string letters,
         (int position, char letter)[] restrictions,

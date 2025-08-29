@@ -1,5 +1,4 @@
-using ScrabbleScorer.Core.Enums;
-using ScrabbleScorer.Core.Models;
+using System.Collections.Immutable;
 
 namespace ScrabbleScorer.Core.Constants;
 
@@ -7,13 +6,22 @@ public static class BoardCoordinateConstants
 {
     public const int BoardSize = 15;
 
-    public static readonly Coordinate[] AllCoordinates = (
+    /**
+     * 1,1...........15,1
+     * .                .
+     * .                .
+     * .                .
+     * .                .
+     * .                .
+     * 1,15..........15,15
+     */
+    public static readonly ImmutableArray<Coordinate> AllCoordinates = (
         from y in Enumerable.Range(1, BoardSize)
         from x in Enumerable.Range(1, BoardSize)
         select new Coordinate(x, y)
-    ).ToArray();
+    ).ToImmutableArray();
 
-    public static BonusTile[] BonusTiles =
+    public static readonly BonusTile[] BonusTiles =
     {
         new() { Coordinate = new Coordinate(1, 1), BonusType = BonusType.TripleWord },
         new() { Coordinate = new Coordinate(8, 1), BonusType = BonusType.TripleWord },

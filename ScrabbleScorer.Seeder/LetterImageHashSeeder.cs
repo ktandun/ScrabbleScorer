@@ -19,7 +19,7 @@ public class LetterImageHashSeeder
         {
             var filename = $"./Assets/{alphabet}.png";
 
-            var imageHash = ImageUtility.GenerateImageHash(filename);
+            var imageHash = ImageUtility.GenerateImageHash(ImageUtility.ReadImageFromFile(filename));
 
             database.LetterHashes.Add(
                 new LetterHashEntity

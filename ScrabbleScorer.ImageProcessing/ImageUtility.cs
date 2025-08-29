@@ -4,10 +4,35 @@ namespace ScrabbleScorer.ImageProcessing;
 
 public static class ImageUtility
 {
-    public static SKBitmap SplitBoardImage(string path, int i, int j, int imageSize)
+    private const int BoardHeight = 1170;
+    private const int BoardWidth = 1170;
+    
+    public static SKBitmap ConvertToMonochromeWithContrast(SKBitmap bitmap, float contrastFactor)
     {
-        var originalImage = SKBitmap.Decode(path);
+        var outputBitmap = new SKBitmap(bitmap.Width, bitmap.Height);
+        
+        for (var y = 0; y < bitmap.Height; y++)
+        {
+            for (var x = 0; x < bitmap.Width; x++)
+            {
+                var pixelColor = bitmap.GetPixel(x, y);
+                var grayValue = (byte)(0.2989 * pixelColor.Red + 0.5870 * pixelColor.Green + 0.1140 * pixelColor.Blue);
 
+                var newPixelColor = new SKColor(grayValue, grayValue, grayValue, pixelColor.Alpha);
+                outputBitmap.SetPixel(x, y, newPixelColor);
+            }
+        }
+
+        return outputBitmap;
+    }
+    
+    public static SKBitmap ReadImageFromFile(string filename)
+    {
+        return SKBitmap.Decode(filename);
+    }
+
+    public static SKBitmap SplitBoardImage(SKBitmap bitmap, int i, int j, int imageSize)
+    {
         var regionWidth = imageSize;
         var regionHeight = imageSize;
 
@@ -19,14 +44,14 @@ public static class ImageUtility
             (i + 1) * regionWidth,
             (j + 1) * regionHeight
         );
-        originalImage.ExtractSubset(region, sourceRect);
+        bitmap.ExtractSubset(region, sourceRect);
 
         return region;
     }
 
     public static SKBitmap RemoveColorsFromImage(SKBitmap originalImage)
     {
-        const byte threshold = 128;
+        const byte threshold = 180;
         var bwImage = new SKBitmap(originalImage.Width, originalImage.Height);
 
         for (var x = 0; x < originalImage.Width; x++)
@@ -68,25 +93,37 @@ public static class ImageUtility
             }
         }
 
-        var newImageHeight =
-            Math.Abs(boardEndHeightPixel!.Value - boardStartHeightPixel!.Value) + 1;
-        var outputImage = new SKBitmap(image.Width, newImageHeight);
+        var outputImage = new SKBitmap(BoardWidth, BoardHeight);
 
         using var canvas = new SKCanvas(outputImage);
 
         var sourceRect = new SKRect(
-            18,
-            boardEndHeightPixel.Value + 18,
-            image.Width,
-            boardStartHeightPixel.Value
+            17,
+            boardEndHeightPixel.Value + 16,
+            BoardWidth,
+            boardEndHeightPixel.Value + BoardHeight
         );
-        canvas.DrawBitmap(image, sourceRect, SKRect.Create(image.Width, newImageHeight));
+        
+        canvas.DrawBitmap(image, sourceRect, SKRect.Create(BoardWidth, BoardHeight));
 
         return outputImage;
     }
 
     public static SKBitmap CropImage(SKBitmap originalImage, int top, int left, int height, int width)
     {
+        var outputImage = new SKBitmap(width, height);
+
+        using var canvas = new SKCanvas(outputImage);
+
+        var sourceRect = new SKRect(left, top, width + left, height + top);
+        canvas.DrawBitmap(originalImage, sourceRect, SKRect.Create(width, height));
+
+        return outputImage;
+    }
+    
+    public static SKBitmap CropLetterFromImage(SKBitmap originalImage)
+    {
+        var (startX, startY) = (0, 0);
         var outputImage = new SKBitmap(width, height);
 
         using var canvas = new SKCanvas(outputImage);
@@ -113,33 +150,51 @@ public static class ImageUtility
 
     public static bool IsEmptyImage(SKBitmap skBitmap)
     {
+        var whiteCount = 0;
+        var blackCount = 0;
+
         for (var x = 0; x < skBitmap.Width; x++)
         {
             for (var y = 0; y < skBitmap.Height; y++)
             {
                 var color = skBitmap.GetPixel(x, y);
 
-                if (!IsWhiteish(color))
-                {
-                    return false;
-                }
+                whiteCount += IsWhiteish(color) ? 1 : 0;
+                blackCount += IsWhiteish(color) ? 0 : 1;
             }
         }
 
-        return true;
+        return whiteCount > blackCount && (double) whiteCount / (whiteCount + blackCount) > 0.9;
+    }
+    
+    public static bool IsDarkImage(SKBitmap skBitmap)
+    {
+        var whiteCount = 0;
+        var blackCount = 0;
+
+        for (var x = 0; x < skBitmap.Width; x++)
+        {
+            for (var y = 0; y < skBitmap.Height; y++)
+            {
+                var color = skBitmap.GetPixel(x, y);
+
+                whiteCount += IsWhiteish(color) ? 1 : 0;
+                blackCount += IsWhiteish(color) ? 0 : 1;
+            }
+        }
+
+        return blackCount > whiteCount && (double) blackCount / (whiteCount + blackCount) > 0.9;
     }
 
-    public static bool[] GenerateImageHash(string filePath)
+    public static bool[] GenerateImageHash(SKBitmap bitmap)
     {
-        using var image = SKBitmap.Decode(filePath);
-
         var hash = new List<bool>();
 
-        for (var x = 0; x < image.Width; x++)
+        for (var x = 0; x < bitmap.Width; x++)
         {
-            for (var y = 0; y < image.Height; y++)
+            for (var y = 0; y < bitmap.Height; y++)
             {
-                var color = image.GetPixel(x, y);
+                var color = bitmap.GetPixel(x, y);
 
                 hash.Add(color == SKColors.White);
             }

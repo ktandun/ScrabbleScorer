@@ -9,6 +9,7 @@
     <ItemGroup>
       <ProjectReference Include="..\ScrabbleScorer.Core\ScrabbleScorer.Core.csproj" />
       <ProjectReference Include="..\ScrabbleScorer.Database\ScrabbleScorer.Database.csproj" />
+      <ProjectReference Include="..\ScrabbleScorer.ImageProcessing\ScrabbleScorer.ImageProcessing.csproj" />
     </ItemGroup>
 
     <ItemGroup>
