@@ -64,7 +64,7 @@ public class WordCreatedShouldBeValidTests
     [Theory]
     [InlineData(Alignment.Horizontal)]
     [InlineData(Alignment.Vertical)]
-    public async Task PlacingWordWithExistingWordOnTop(Alignment alignment)
+    public async Task PlacingWordWithExistingWordOnOneSide(Alignment alignment)
     {
         var valid = await _sut.ValidateAsync(
             new Board
@@ -102,6 +102,44 @@ public class WordCreatedShouldBeValidTests
                     Letter.B,
                     Letter.L,
                     Letter.E
+                ]
+            });
+
+        Assert.True(valid);
+    }
+    
+    [Fact]
+    public async Task PlacingWordWithExistingWordOnBothSides()
+    {
+        var valid = await _sut.ValidateAsync(
+            new Board
+            {
+                BoardLetters =
+                [
+                    new BoardLetter
+                    {
+                        Letter = Letter.C,
+                        Coordinate = new Coordinate(1, 1),
+                    },
+                    new BoardLetter
+                    {
+                        Letter = Letter.A,
+                        Coordinate = new Coordinate(1, 2),
+                    },
+                    new BoardLetter
+                    {
+                        Letter = Letter.T,
+                        Coordinate = new Coordinate(1, 4),
+                    },
+                ]
+            },
+            new PlacementModel
+            {
+                Coordinate = new Coordinate(1, 3),
+                Alignment = Alignment.Vertical,
+                Letters =
+                [
+                    Letter.S,
                 ]
             });
 

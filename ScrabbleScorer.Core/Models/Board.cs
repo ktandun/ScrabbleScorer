@@ -18,17 +18,17 @@ public record BoardLetter
 
 public record Coordinate(int X, int Y)
 {
-    public Coordinate NextTile(Alignment alignment)
+    public Coordinate NextTile(Alignment alignment, int count = 1)
     {
         return alignment == Alignment.Horizontal
-            ? this with { X = X + 1 }
-            : this with { Y = Y + 1 };
+            ? this with { X = X + count }
+            : this with { Y = Y + count };
     }
     
-    public Coordinate PrevTile(Alignment alignment)
+    public Coordinate PrevTile(Alignment alignment, int count = 1)
     {
         return alignment == Alignment.Horizontal
-            ? this with { X = X - 1 }
-            : this with { Y = Y - 1 };
+            ? this with { X = X - count }
+            : this with { Y = Y - count };
     }
 }

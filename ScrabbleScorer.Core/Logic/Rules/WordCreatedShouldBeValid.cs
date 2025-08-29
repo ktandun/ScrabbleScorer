@@ -16,7 +16,7 @@ public class WordCreatedShouldBeValid : IPlacementRule
     {
         var validWords = await _wordRepository.ReadWordsAsync();
 
-        var letters = GetExistingLettersBeforePlacement(board, placement);
+        var letters = new List<Letter>();
         var currentCoordinate = placement.Coordinate;
 
         for (var i = 0; i < placement.Letters.Count; i++)
@@ -36,34 +36,12 @@ public class WordCreatedShouldBeValid : IPlacementRule
             currentCoordinate = currentCoordinate.NextTile(placement.Alignment);
         }
 
-        var word = letters.ToWord();
+        var word = board.GetPlacementPrefixLetters(placement)
+            .Concat(letters)
+            .Concat(board.GetPlacementSuffixLetters(placement))
+            .ToList()
+            .ToWord();
 
         return validWords.Contains(word);
-    }
-
-    private static List<Letter> GetExistingLettersBeforePlacement(Board board, PlacementModel placement)
-    {
-        var letters = new List<Letter>();
-        var currentCoordinate = placement.Coordinate.PrevTile(placement.Alignment);
-
-        while (true)
-        {
-            var letter = board.GetLetterInCoordinate(currentCoordinate);
-
-            if (letter is not null)
-            {
-                letters.Add(letter.Value);
-            }
-            else
-            {
-                break;
-            }
-
-            currentCoordinate = currentCoordinate.PrevTile(placement.Alignment);
-        }
-        
-        letters.Reverse();
-
-        return letters;
     }
 }
