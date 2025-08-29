@@ -60,4 +60,51 @@ public class WordCreatedShouldBeValidTests
 
         Assert.True(valid);
     }
+
+    [Theory]
+    [InlineData(Alignment.Horizontal)]
+    [InlineData(Alignment.Vertical)]
+    public async Task PlacingWordWithExistingWordOnTop(Alignment alignment)
+    {
+        var valid = await _sut.ValidateAsync(
+            new Board
+            {
+                BoardLetters =
+                [
+                    new BoardLetter
+                    {
+                        Letter = Letter.C,
+                        Coordinate = new Coordinate(3, 1),
+                    },
+                    new BoardLetter
+                    {
+                        Letter = Letter.A,
+                        Coordinate = new Coordinate(3, 2),
+                    },
+                    new BoardLetter
+                    {
+                        Letter = Letter.C,
+                        Coordinate = new Coordinate(1, 3),
+                    },
+                    new BoardLetter
+                    {
+                        Letter = Letter.A,
+                        Coordinate = new Coordinate(2, 3),
+                    }
+                ]
+            },
+            new PlacementModel
+            {
+                Coordinate = new Coordinate(3, 3),
+                Alignment = alignment,
+                Letters =
+                [
+                    Letter.B,
+                    Letter.L,
+                    Letter.E
+                ]
+            });
+
+        Assert.True(valid);
+    }
 }

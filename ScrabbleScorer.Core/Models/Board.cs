@@ -22,6 +22,13 @@ public record Coordinate(int X, int Y)
     {
         return alignment == Alignment.Horizontal
             ? this with { X = X + 1 }
+            : this with { Y = Y + 1 };
+    }
+    
+    public Coordinate PrevTile(Alignment alignment)
+    {
+        return alignment == Alignment.Horizontal
+            ? this with { X = X - 1 }
             : this with { Y = Y - 1 };
     }
 }
