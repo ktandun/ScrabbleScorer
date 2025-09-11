@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Caching.Memory;
 using ScrabbleScorer.Core.Repositories;
+using Xunit;
 
 namespace ScrabbleScorer.Tests.Repositories;
 

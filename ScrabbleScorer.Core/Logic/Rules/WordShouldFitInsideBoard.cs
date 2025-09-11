@@ -1,4 +1,5 @@
 using ScrabbleScorer.Core.Constants;
+using ScrabbleScorer.Core.Utilities;
 
 namespace ScrabbleScorer.Core.Logic.Rules;
 
@@ -12,16 +13,18 @@ public class WordShouldFitInsideBoard : IPlacementRule
         {
             var letter = board.GetLetterInCoordinate(currentCoordinate);
 
-            if (letter is not null) i--;
+            if (letter is not null)
+                i--;
 
             currentCoordinate = currentCoordinate.NextTile(placement.Alignment);
         }
 
-        return Task.FromResult(currentCoordinate
-            is
-            {
-                X: <= BoardCoordinateConstants.BoardSize,
-                Y: <= BoardCoordinateConstants.BoardSize
-            });
+        return Task.FromResult(
+            currentCoordinate
+                is {
+                    X: <= BoardCoordinateConstants.BoardSize,
+                    Y: <= BoardCoordinateConstants.BoardSize
+                }
+        );
     }
 }
