@@ -4,12 +4,15 @@ public static class DictionaryWordsUtilities
 {
     private static readonly WordEqualityComparer WordComparer = new();
 
-    public static bool Contains(this DictionaryWords dictionaryWords, string word)
+    public static bool ShouldContain(this DictionaryWords dictionaryWords, string word)
     {
         return dictionaryWords.Words.Contains(word, WordComparer);
     }
 
-    public static bool Contains(this DictionaryWords dictionaryWords, IEnumerable<string> words)
+    public static bool ShouldContain(
+        this DictionaryWords dictionaryWords,
+        IEnumerable<string> words
+    )
     {
         // ReSharper disable once LoopCanBeConvertedToQuery
         // Easier for debugging

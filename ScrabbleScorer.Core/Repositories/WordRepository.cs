@@ -5,7 +5,7 @@ namespace ScrabbleScorer.Core.Repositories;
 
 public interface IWordRepository
 {
-    Task<DictionaryWords> ReadWordsAsync();
+    Task<DictionaryWords> GetDictionaryWordsAsync();
 }
 
 public class WordRepository : IWordRepository
@@ -18,10 +18,12 @@ public class WordRepository : IWordRepository
         _cache = cache;
     }
 
-    public async Task<DictionaryWords> ReadWordsAsync()
+    public async Task<DictionaryWords> GetDictionaryWordsAsync()
     {
-        if (_cache.TryGetValue(CacheKeys.Words, out var words)
-            && words?.GetType() == typeof(List<string>))
+        if (
+            _cache.TryGetValue(CacheKeys.Words, out var words)
+            && words?.GetType() == typeof(List<string>)
+        )
             return new DictionaryWords((List<string>)words);
 
         var allScrabbleWords = await File.ReadAllLinesAsync(WordsFile);

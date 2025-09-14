@@ -16,7 +16,7 @@ public class WordRepositoryTests
     [Fact]
     public async Task ReadWordsAsyncTest()
     {
-        var result = await _sut.ReadWordsAsync();
+        var result = await _sut.GetDictionaryWordsAsync();
 
         Assert.NotNull(result);
     }

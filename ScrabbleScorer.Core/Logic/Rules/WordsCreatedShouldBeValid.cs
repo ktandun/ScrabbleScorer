@@ -14,18 +14,22 @@ public class WordsCreatedShouldBeValid : IPlacementRule
 
     public async Task<bool> ValidateAsync(Board board, PlacementModel placement)
     {
-        var validWords = await _wordRepository.ReadWordsAsync();
+        var dictionaryWords = await _wordRepository.GetDictionaryWordsAsync();
 
         var word = BoardUtility.GetCreatedWordOfAlignment(board, placement);
-        var words = BoardUtility
+        var oppositeAlignmentWords = BoardUtility
             .GetCreatedWordsOppositeAlignment(board, placement)
             .Where(w => w.Length > 1)
             .ToList();
 
         return placement.Letters.Count switch
         {
-            1 => validWords.Contains(word) || validWords.Contains(words),
-            _ => validWords.Contains(word) && validWords.Contains(words)
+            1
+                => dictionaryWords.ShouldContain(word)
+                    || dictionaryWords.ShouldContain(oppositeAlignmentWords),
+            _
+                => dictionaryWords.ShouldContain(word)
+                    && dictionaryWords.ShouldContain(oppositeAlignmentWords)
         };
     }
 }
