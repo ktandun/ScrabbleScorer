@@ -4,69 +4,81 @@ namespace ScrabbleScorer.Core.Utilities;
 
 public static class BoardUtility
 {
-    public static List<Letter> GetPlacementPrefixLetters(this Board board, PlacementModel placement)
+    public static Coordinate[] GetAllCoordinatesWithinDistance(Coordinate coordinate, int distance)
     {
-        var letters = new List<Letter>();
-        var currentCoordinate = placement.Coordinate.PrevTile(placement.Alignment);
+        var coordinates = new HashSet<Coordinate>();
 
-        while (true)
+
+        foreach (var alignment in BoardCoordinateConstants.AllAlignments)
         {
-            var letter = board.GetLetterInCoordinate(currentCoordinate);
-
-            if (letter is not null)
+            for (var i = 1; i <= distance; i++)
             {
-                letters.Add(letter.Value);
+                coordinates.Add(coordinate.NextTile(alignment, i));
+                coordinates.Add(coordinate.NextTile(alignment).NextTile(alignment.Opposite(), i-1));
+                coordinates.Add(coordinate.PrevTile(alignment.Opposite(), i));
+                coordinates.Add(coordinate.PrevTile(alignment.Opposite()).PrevTile(alignment, i-1));
             }
-            else
-            {
-                break;
-            }
-
-            currentCoordinate = currentCoordinate.PrevTile(placement.Alignment);
         }
 
-        letters.Reverse();
-
-        return letters;
+        return coordinates.ToArray();
     }
 
-    public static List<Letter> GetPlacementSuffixLetters(this Board board, PlacementModel placement)
+    extension(Board board)
     {
-        var letters = new List<Letter>();
-        var currentCoordinate = placement.Coordinate.NextTile(
-            placement.Alignment,
-            count: placement.Letters.Count
-        );
-
-        while (true)
+        public bool IsEmpty()
         {
-            var letter = board.GetLetterInCoordinate(currentCoordinate);
-
-            if (letter is not null)
-            {
-                letters.Add(letter.Value);
-            }
-            else
-            {
-                break;
-            }
-
-            currentCoordinate = currentCoordinate.NextTile(placement.Alignment);
+            return board.BoardLetters.Length == 0;
         }
 
-        return letters;
-    }
+        public Letter? GetLetterInCoordinate(Coordinate coordinate)
+        {
+            return board.BoardLetters.SingleOrDefault(x => x.Coordinate == coordinate)?.Letter;
+        }
 
-    public static IReadOnlyCollection<string> GetCreatedWordsOppositeAlignment(
-        Board board,
-        PlacementModel placement
-    )
-    {
-        var oppositeAlignment = placement.Alignment.Opposite();
 
-        var letters = placement
-            .Letters.Select(
-                (letter, index) =>
+        public (Coordinate finalCoordinate, List<LetterOnBoard> wordCreated) TryPlaceLetters(PlacementModel placement
+        )
+        {
+            var currCoord = placement.Coordinate;
+            var letters = new List<LetterOnBoard>();
+
+            foreach (var letter in placement.Letters)
+            {
+                while (board.GetLetterInCoordinate(currCoord) is not null)
+                {
+                    letters.Add(new LetterOnBoard
+                    {
+                        Letter = board.GetLetterInCoordinate(currCoord)!.Value,
+                        Coordinate = currCoord
+                    });
+                    currCoord = currCoord.NextTile(placement.Alignment);
+                }
+
+                letters.Add(new LetterOnBoard
+                {
+                    Letter = letter,
+                    Coordinate = currCoord
+                });
+
+                currCoord = currCoord.NextTile(placement.Alignment);
+            }
+
+            var wordCreated = board
+                .GetPlacementPrefixLetters(placement)
+                .Concat(letters)
+                .Concat(board.GetPlacementSuffixLetters(currCoord, placement.Alignment))
+                .ToList();
+
+            return (currCoord.PrevTile(placement.Alignment), wordCreated);
+        }
+
+        public List<List<LetterOnBoard>> GetCreatedWordsOppositeAlignment(PlacementModel placement
+        )
+        {
+            var oppositeAlignment = placement.Alignment.Opposite();
+
+            var letters = placement
+                .Letters.Select((letter, index) =>
                     GetCreatedWordOfAlignment(
                         board,
                         placement with
@@ -76,40 +88,70 @@ public static class BoardUtility
                             Letters = [letter]
                         }
                     )
-            )
-            .ToList();
+                )
+                .ToList();
 
-        return letters.ToList();
-    }
-
-    public static string GetCreatedWordOfAlignment(Board board, PlacementModel placement)
-    {
-        var letters = new List<Letter>();
-        var currentCoordinate = placement.Coordinate;
-
-        for (var i = 0; i < placement.Letters.Count; i++)
-        {
-            var letter = board.GetLetterInCoordinate(currentCoordinate);
-
-            if (letter is not null)
-            {
-                letters.Add(letter.Value);
-                i--;
-            }
-            else
-            {
-                letters.Add(placement.Letters[i]);
-            }
-
-            currentCoordinate = currentCoordinate.NextTile(placement.Alignment);
+            return letters.ToList();
         }
 
-        var word = board
-            .GetPlacementPrefixLetters(placement)
-            .Concat(letters)
-            .Concat(board.GetPlacementSuffixLetters(placement))
-            .ToList()
-            .ToWord();
-        return word;
+        public List<LetterOnBoard> GetCreatedWordOfAlignment(PlacementModel placement)
+        {
+            var (_, letters) = board.TryPlaceLetters(placement);
+
+            return letters;
+        }
+
+        private List<LetterOnBoard> GetPlacementPrefixLetters(PlacementModel placement
+        )
+        {
+            var letters = new List<LetterOnBoard>();
+            var currentCoordinate = placement.Coordinate.PrevTile(placement.Alignment);
+
+            while (true)
+            {
+                var letter = board.GetLetterInCoordinate(currentCoordinate);
+
+                if (letter is not null)
+                    letters.Add(new LetterOnBoard
+                    {
+                        Letter = letter.Value,
+                        Coordinate = currentCoordinate
+                    });
+                else
+                    break;
+
+                currentCoordinate = currentCoordinate.PrevTile(placement.Alignment);
+            }
+
+            letters.Reverse();
+
+            return letters;
+        }
+
+        private List<LetterOnBoard> GetPlacementSuffixLetters(Coordinate lastLetterCoordinate,
+            Alignment alignment
+        )
+        {
+            var letters = new List<LetterOnBoard>();
+            var currentCoordinate = lastLetterCoordinate;
+
+            while (true)
+            {
+                var letter = board.GetLetterInCoordinate(currentCoordinate);
+
+                if (letter is not null)
+                    letters.Add(new LetterOnBoard
+                    {
+                        Letter = letter.Value,
+                        Coordinate = currentCoordinate
+                    });
+                else
+                    break;
+
+                currentCoordinate = currentCoordinate.NextTile(alignment);
+            }
+
+            return letters;
+        }
     }
 }

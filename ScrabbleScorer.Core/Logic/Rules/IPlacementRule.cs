@@ -2,12 +2,7 @@ namespace ScrabbleScorer.Core.Logic.Rules;
 
 public interface IPlacementRule
 {
+    int Order { get; }
     Task<bool> ValidateAsync(Board board, PlacementModel placement);
 }
 
-public record PlacementModel
-{
-    public required Coordinate Coordinate { get; init; }
-    public required Alignment Alignment { get; init; }
-    public required List<Letter> Letters { get; init; } = [];
-}

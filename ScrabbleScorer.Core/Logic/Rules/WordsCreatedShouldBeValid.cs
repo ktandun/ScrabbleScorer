@@ -1,5 +1,4 @@
 using ScrabbleScorer.Core.Repositories;
-using ScrabbleScorer.Core.Utilities;
 
 namespace ScrabbleScorer.Core.Logic.Rules;
 
@@ -12,17 +11,20 @@ public class WordsCreatedShouldBeValid : IPlacementRule
         _wordRepository = wordRepository;
     }
 
+    public int Order => 4;
+
     public async Task<bool> ValidateAsync(Board board, PlacementModel placement)
     {
         var dictionaryWords = await _wordRepository.GetDictionaryWordsAsync();
 
-        var word = BoardUtility.GetCreatedWordOfAlignment(board, placement);
-        var oppositeAlignmentWords = BoardUtility
-            .GetCreatedWordsOppositeAlignment(board, placement)
-            .Where(w => w.Length > 1)
+        var word = board.GetCreatedWordOfAlignment(placement).ToWord();
+        var oppositeAlignmentWords = board
+            .GetCreatedWordsOppositeAlignment(placement)
+            .Where(w => w.ToWord().Length > 1)
+            .Select(w => w.ToWord())
             .ToList();
 
-        return placement.Letters.Count switch
+        return placement.Letters.Length switch
         {
             1
                 => dictionaryWords.ShouldContain(word)

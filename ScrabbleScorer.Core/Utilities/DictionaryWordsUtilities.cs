@@ -4,25 +4,24 @@ public static class DictionaryWordsUtilities
 {
     private static readonly WordEqualityComparer WordComparer = new();
 
-    public static bool ShouldContain(this DictionaryWords dictionaryWords, string word)
+    extension(DictionaryWords dictionaryWords)
     {
-        return dictionaryWords.Words.Contains(word, WordComparer);
-    }
-
-    public static bool ShouldContain(
-        this DictionaryWords dictionaryWords,
-        IEnumerable<string> words
-    )
-    {
-        // ReSharper disable once LoopCanBeConvertedToQuery
-        // Easier for debugging
-        foreach (var word in words)
+        public bool ShouldContain(string word)
         {
-            if (!dictionaryWords.Words.Contains(word, WordComparer))
-                return false;
+            return dictionaryWords.Words.Contains(word, WordComparer);
         }
 
-        return true;
+        public bool ShouldContain(IEnumerable<string> words
+        )
+        {
+            // ReSharper disable once LoopCanBeConvertedToQuery
+            // Easier for debugging
+            foreach (var word in words)
+                if (!dictionaryWords.Words.Contains(word, WordComparer))
+                    return false;
+
+            return true;
+        }
     }
 }
 

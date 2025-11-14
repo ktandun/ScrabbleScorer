@@ -1,6 +1,4 @@
-using Microsoft.Extensions.Caching.Memory;
 using ScrabbleScorer.Core.Repositories;
-using Xunit;
 
 namespace ScrabbleScorer.Tests.Repositories;
 
@@ -10,7 +8,7 @@ public class WordRepositoryTests
 
     public WordRepositoryTests()
     {
-        _sut = new WordRepository(new MemoryCache(new MemoryCacheOptions()));
+        _sut = new WordRepository();
     }
 
     [Fact]

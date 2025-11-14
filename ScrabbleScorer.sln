@@ -4,6 +4,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScrabbleScorer.Core", "Scra
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScrabbleScorer.Tests", "ScrabbleScorer.Tests\ScrabbleScorer.Tests.csproj", "{5BBB937A-21E5-4104-A9DA-E5094C4B5639}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScrabbleScorer.App", "ScrabbleScorer.App\ScrabbleScorer.App.csproj", "{07D6C4BF-91E0-4313-B26C-67DA18C5344C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScrabbleScorer.Web", "ScrabbleScorer.Web\ScrabbleScorer.Web.csproj", "{15E50B02-84BC-47C4-B09B-0F1588213360}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +22,13 @@ Global
 		{5BBB937A-21E5-4104-A9DA-E5094C4B5639}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5BBB937A-21E5-4104-A9DA-E5094C4B5639}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5BBB937A-21E5-4104-A9DA-E5094C4B5639}.Release|Any CPU.Build.0 = Release|Any CPU
+		{07D6C4BF-91E0-4313-B26C-67DA18C5344C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{07D6C4BF-91E0-4313-B26C-67DA18C5344C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{07D6C4BF-91E0-4313-B26C-67DA18C5344C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{07D6C4BF-91E0-4313-B26C-67DA18C5344C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{15E50B02-84BC-47C4-B09B-0F1588213360}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{15E50B02-84BC-47C4-B09B-0F1588213360}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{15E50B02-84BC-47C4-B09B-0F1588213360}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{15E50B02-84BC-47C4-B09B-0F1588213360}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

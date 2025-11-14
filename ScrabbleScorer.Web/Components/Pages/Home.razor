@@ -1,0 +1,185 @@
+﻿@page "/"
+@using Microsoft.VisualBasic
+@using ScrabbleScorer.Core.Constants
+@using ScrabbleScorer.Core.Enums
+@using ScrabbleScorer.Core.Models
+@using ScrabbleScorer.Core.Services
+@using ScrabbleScorer.Core.Utilities
+@using ScrabbleScorer.Web.Components.Shared
+@inject IGameService GameService
+@rendermode InteractiveServer
+
+<PageTitle>Home</PageTitle>
+
+
+<div class="board">
+    @for (var row = 1; row <= BoardCoordinateConstants.BoardSize; row++)
+    {
+        for (var col = 1; col <= BoardCoordinateConstants.BoardSize; col++)
+        {
+            var coordinate = new Coordinate(col, row);
+            var letter = Board.GetLetterInCoordinate(coordinate);
+            var bonusTile = BoardCoordinateConstants.BonusTiles.FirstOrDefault(bt => bt.Coordinate == coordinate);
+            var classes = bonusTile is not null ? $"cell {bonusTile.ToString().ToLower()}" : "cell ";
+
+            if (coordinate == _lastCoordinate)
+            {
+                classes += " clicked";
+            }
+
+            <div class="@classes" @onclick="() => OnCellClick(coordinate)">
+                @if (letter is not null)
+                {
+                    <div class="tile">
+                        @letter.Value
+                        <small>@letter.Value.ToLetterValue()</small>
+                    </div>
+                }
+                else if (bonusTile is not null)
+                {
+                    @bonusTile.BonusType.ToString()
+                }
+            </div>
+        }
+    }
+</div>
+
+<PlayerHand Letters="_playerLetters" PlayerHandClicked="OnPlayerHandClicked" LettersCleared="OnLettersCleared"></PlayerHand>
+<KeyBoard KeyPressed="HandleKeyPress" BackspacePressed="HandleBackspace"/>
+
+<button class="calculate-button" @onclick="OnClick">
+    @_calculateBtnText
+</button>
+
+<PlacementScores Scores="_placementScoreModels"></PlacementScores>
+
+@code {
+    private Board Board { get; set; } = null!;
+    private bool _isUpdatingBoard;
+    private string _calculateBtnText = "Calculate";
+    private Letter? _lastKey;
+    private Coordinate? _lastCoordinate;
+    private List<PlacementScoreModel> _placementScoreModels = [];
+
+    private readonly List<Letter> _playerLetters =
+    [
+        Letter.D,
+        Letter.A,
+        Letter.B,
+        Letter.O,
+        Letter.R
+    ];
+
+    protected override void OnInitialized()
+    {
+        Board = new Board
+        {
+            BoardLetters =
+            [
+                new LetterOnBoard
+                {
+                    Letter = Letter.A,
+                    Coordinate = new Coordinate(8, 8)
+                }
+            ]
+        };
+    }
+
+    private async Task OnClick()
+    {
+        try
+        {
+            _calculateBtnText = "Calculating...";
+
+            var highestNScores = await GameService.FindBestWordAsync(Board, _playerLetters);
+
+            _placementScoreModels = highestNScores;
+
+        }
+        finally
+        {
+            _calculateBtnText = "Calculate";
+        }
+    }
+
+    private void HandleKeyPress(string key)
+    {
+        _lastKey = key.ToCharArray()[0].ToLetter();
+        UpdateBoard();
+        UpdatePlayerHand();
+    }
+
+    private void HandleBackspace()
+    {
+        if (!_isUpdatingBoard || _lastCoordinate is null) return;
+
+        var temp = Board.BoardLetters.ToList();
+        temp.RemoveAll((l) => l.Coordinate == _lastCoordinate);
+
+        Board = new Board
+        {
+            BoardLetters = temp.ToArray()
+        };
+
+        _lastCoordinate = _lastCoordinate.PrevTile(Alignment.Horizontal);
+    }
+
+    private void OnCellClick(Coordinate coordinate)
+    {
+        _isUpdatingBoard = true;
+        _lastCoordinate = coordinate;
+    }
+
+    private void OnPlayerHandClicked(Letter letter)
+    {
+        _isUpdatingBoard = false;
+    }
+
+    private void OnLettersCleared()
+    {
+        _playerLetters.Clear();
+    }
+
+    private void UpdatePlayerHand()
+    {
+        if (_isUpdatingBoard) return;
+        if (_lastKey is null) return;
+
+        _playerLetters.Add(_lastKey.Value);
+    }
+
+    private void UpdateBoard()
+    {
+        if (_lastCoordinate is null || _lastKey is null) return;
+        if (!_isUpdatingBoard) return;
+
+        var newLetter = new LetterOnBoard
+        {
+            Letter = _lastKey.Value,
+            Coordinate = _lastCoordinate
+        };
+
+        var index = Array.FindIndex(Board.BoardLetters, i => i.Coordinate == _lastCoordinate);
+        if (index >= 0)
+        {
+            // Replace
+            Board.BoardLetters[index] = newLetter;
+        }
+        else
+        {
+            Board = new Board
+            {
+                BoardLetters =
+                [
+                    ..Board.BoardLetters, new LetterOnBoard
+                    {
+                        Letter = _lastKey.Value,
+                        Coordinate = _lastCoordinate
+                    }
+                ]
+            };
+        }
+
+        _lastCoordinate = _lastCoordinate.NextTile(Alignment.Horizontal);
+    }
+}

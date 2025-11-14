@@ -1,8 +1,6 @@
-using Microsoft.Extensions.Caching.Memory;
 using ScrabbleScorer.Core.Enums;
 using ScrabbleScorer.Core.Logic.Rules;
 using ScrabbleScorer.Core.Repositories;
-using Xunit;
 
 namespace ScrabbleScorer.Tests.Logic.Rules;
 
@@ -12,7 +10,7 @@ public class WordsCreatedShouldBeValidTests
 
     public WordsCreatedShouldBeValidTests()
     {
-        var wordRepository = new WordRepository(new MemoryCache(new MemoryCacheOptions()));
+        var wordRepository = new WordRepository();
         _sut = new WordsCreatedShouldBeValid(wordRepository);
     }
 
@@ -58,10 +56,10 @@ public class WordsCreatedShouldBeValidTests
             {
                 BoardLetters =
                 [
-                    new BoardLetter { Letter = Letter.C, Coordinate = new Coordinate(3, 1), },
-                    new BoardLetter { Letter = Letter.A, Coordinate = new Coordinate(3, 2), },
-                    new BoardLetter { Letter = Letter.C, Coordinate = new Coordinate(1, 3), },
-                    new BoardLetter { Letter = Letter.A, Coordinate = new Coordinate(2, 3), }
+                    new LetterOnBoard { Letter = Letter.C, Coordinate = new Coordinate(3, 1) },
+                    new LetterOnBoard { Letter = Letter.A, Coordinate = new Coordinate(3, 2) },
+                    new LetterOnBoard { Letter = Letter.C, Coordinate = new Coordinate(1, 3) },
+                    new LetterOnBoard { Letter = Letter.A, Coordinate = new Coordinate(2, 3) }
                 ]
             },
             new PlacementModel
@@ -83,16 +81,16 @@ public class WordsCreatedShouldBeValidTests
             {
                 BoardLetters =
                 [
-                    new BoardLetter { Letter = Letter.C, Coordinate = new Coordinate(1, 1), },
-                    new BoardLetter { Letter = Letter.A, Coordinate = new Coordinate(1, 2), },
-                    new BoardLetter { Letter = Letter.T, Coordinate = new Coordinate(1, 4), },
+                    new LetterOnBoard { Letter = Letter.C, Coordinate = new Coordinate(1, 1) },
+                    new LetterOnBoard { Letter = Letter.A, Coordinate = new Coordinate(1, 2) },
+                    new LetterOnBoard { Letter = Letter.T, Coordinate = new Coordinate(1, 4) }
                 ]
             },
             new PlacementModel
             {
                 Coordinate = new Coordinate(1, 3),
                 Alignment = Alignment.Vertical,
-                Letters = [Letter.S,]
+                Letters = [Letter.S]
             }
         );
 
@@ -107,10 +105,10 @@ public class WordsCreatedShouldBeValidTests
             {
                 BoardLetters =
                 [
-                    new BoardLetter { Letter = Letter.W, Coordinate = new Coordinate(1, 1), },
-                    new BoardLetter { Letter = Letter.H, Coordinate = new Coordinate(2, 1), },
-                    new BoardLetter { Letter = Letter.O, Coordinate = new Coordinate(3, 1), },
-                    new BoardLetter { Letter = Letter.A, Coordinate = new Coordinate(4, 1), },
+                    new LetterOnBoard { Letter = Letter.W, Coordinate = new Coordinate(1, 1) },
+                    new LetterOnBoard { Letter = Letter.H, Coordinate = new Coordinate(2, 1) },
+                    new LetterOnBoard { Letter = Letter.O, Coordinate = new Coordinate(3, 1) },
+                    new LetterOnBoard { Letter = Letter.A, Coordinate = new Coordinate(4, 1) }
                 ]
             },
             new PlacementModel
@@ -132,37 +130,37 @@ public class WordsCreatedShouldBeValidTests
             {
                 BoardLetters =
                 [
-                    new BoardLetter { Letter = Letter.P, Coordinate = new Coordinate(1, 1), },
-                    new BoardLetter { Letter = Letter.A, Coordinate = new Coordinate(2, 1), },
-                    new BoardLetter { Letter = Letter.T, Coordinate = new Coordinate(3, 1), },
-                    new BoardLetter { Letter = Letter.A, Coordinate = new Coordinate(4, 1), },
-                    new BoardLetter { Letter = Letter.M, Coordinate = new Coordinate(5, 1), },
-                    new BoardLetter { Letter = Letter.A, Coordinate = new Coordinate(6, 1), },
-                    new BoardLetter { Letter = Letter.R, Coordinate = new Coordinate(7, 1), },
+                    new LetterOnBoard { Letter = Letter.P, Coordinate = new Coordinate(1, 1) },
+                    new LetterOnBoard { Letter = Letter.A, Coordinate = new Coordinate(2, 1) },
+                    new LetterOnBoard { Letter = Letter.T, Coordinate = new Coordinate(3, 1) },
+                    new LetterOnBoard { Letter = Letter.A, Coordinate = new Coordinate(4, 1) },
+                    new LetterOnBoard { Letter = Letter.M, Coordinate = new Coordinate(5, 1) },
+                    new LetterOnBoard { Letter = Letter.A, Coordinate = new Coordinate(6, 1) },
+                    new LetterOnBoard { Letter = Letter.R, Coordinate = new Coordinate(7, 1) },
                     //
-                    new BoardLetter { Letter = Letter.A, Coordinate = new Coordinate(1, 2), },
-                    new BoardLetter { Letter = Letter.M, Coordinate = new Coordinate(2, 2), },
-                    new BoardLetter { Letter = Letter.A, Coordinate = new Coordinate(3, 2), },
-                    new BoardLetter { Letter = Letter.R, Coordinate = new Coordinate(4, 2), },
-                    new BoardLetter { Letter = Letter.O, Coordinate = new Coordinate(5, 2), },
-                    new BoardLetter { Letter = Letter.N, Coordinate = new Coordinate(6, 2), },
-                    new BoardLetter { Letter = Letter.E, Coordinate = new Coordinate(7, 2), },
+                    new LetterOnBoard { Letter = Letter.A, Coordinate = new Coordinate(1, 2) },
+                    new LetterOnBoard { Letter = Letter.M, Coordinate = new Coordinate(2, 2) },
+                    new LetterOnBoard { Letter = Letter.A, Coordinate = new Coordinate(3, 2) },
+                    new LetterOnBoard { Letter = Letter.R, Coordinate = new Coordinate(4, 2) },
+                    new LetterOnBoard { Letter = Letter.O, Coordinate = new Coordinate(5, 2) },
+                    new LetterOnBoard { Letter = Letter.N, Coordinate = new Coordinate(6, 2) },
+                    new LetterOnBoard { Letter = Letter.E, Coordinate = new Coordinate(7, 2) },
                     //
-                    new BoardLetter { Letter = Letter.C, Coordinate = new Coordinate(1, 3), },
-                    new BoardLetter { Letter = Letter.U, Coordinate = new Coordinate(2, 3), },
-                    new BoardLetter { Letter = Letter.R, Coordinate = new Coordinate(3, 3), },
-                    new BoardLetter { Letter = Letter.E, Coordinate = new Coordinate(4, 3), },
-                    new BoardLetter { Letter = Letter.T, Coordinate = new Coordinate(5, 3), },
-                    new BoardLetter { Letter = Letter.T, Coordinate = new Coordinate(6, 3), },
-                    new BoardLetter { Letter = Letter.E, Coordinate = new Coordinate(7, 3), },
+                    new LetterOnBoard { Letter = Letter.C, Coordinate = new Coordinate(1, 3) },
+                    new LetterOnBoard { Letter = Letter.U, Coordinate = new Coordinate(2, 3) },
+                    new LetterOnBoard { Letter = Letter.R, Coordinate = new Coordinate(3, 3) },
+                    new LetterOnBoard { Letter = Letter.E, Coordinate = new Coordinate(4, 3) },
+                    new LetterOnBoard { Letter = Letter.T, Coordinate = new Coordinate(5, 3) },
+                    new LetterOnBoard { Letter = Letter.T, Coordinate = new Coordinate(6, 3) },
+                    new LetterOnBoard { Letter = Letter.E, Coordinate = new Coordinate(7, 3) },
                     //
-                    new BoardLetter { Letter = Letter.E, Coordinate = new Coordinate(1, 4), },
-                    new BoardLetter { Letter = Letter.S, Coordinate = new Coordinate(2, 4), },
-                    new BoardLetter { Letter = Letter.T, Coordinate = new Coordinate(3, 4), },
-                    new BoardLetter { Letter = Letter.A, Coordinate = new Coordinate(4, 4), },
-                    new BoardLetter { Letter = Letter.T, Coordinate = new Coordinate(5, 4), },
-                    new BoardLetter { Letter = Letter.E, Coordinate = new Coordinate(6, 4), },
-                    new BoardLetter { Letter = Letter.D, Coordinate = new Coordinate(7, 4), },
+                    new LetterOnBoard { Letter = Letter.E, Coordinate = new Coordinate(1, 4) },
+                    new LetterOnBoard { Letter = Letter.S, Coordinate = new Coordinate(2, 4) },
+                    new LetterOnBoard { Letter = Letter.T, Coordinate = new Coordinate(3, 4) },
+                    new LetterOnBoard { Letter = Letter.A, Coordinate = new Coordinate(4, 4) },
+                    new LetterOnBoard { Letter = Letter.T, Coordinate = new Coordinate(5, 4) },
+                    new LetterOnBoard { Letter = Letter.E, Coordinate = new Coordinate(6, 4) },
+                    new LetterOnBoard { Letter = Letter.D, Coordinate = new Coordinate(7, 4) }
                 ]
             },
             new PlacementModel

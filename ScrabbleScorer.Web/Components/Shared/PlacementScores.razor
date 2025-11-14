@@ -1,0 +1,49 @@
+@using ScrabbleScorer.Core.Enums
+@using ScrabbleScorer.Core.Models
+
+<div class="placement-list">
+    @if (Scores.Count == 0)
+    {
+        <div class="empty">No placements available.</div>
+    }
+    else
+    {
+        @foreach (var p in Scores)
+        {
+            <div class="placement-card">
+
+                <div class="placement-header">
+                    <div class="placement-title">
+                        <span class="coord">( @p.Placement.Coordinate.X , @p.Placement.Coordinate.Y )</span>
+                        <span class="align">
+                            @if (p.Placement.Alignment == Alignment.Horizontal)
+                            {
+                                <span>➡️ Horizontal</span>
+                            }
+                            else
+                            {
+                                <span>⬇️ Vertical</span>
+                            }
+                        </span>
+                    </div>
+
+                    <div class="score-box">@p.Score</div>
+                </div>
+
+                <div class="tiles">
+                    @foreach (var letter in p.Placement.Letters)
+                    {
+                        <div class="tile">
+                            @(letter == Letter.Blank ? "_" : letter.ToString())
+                        </div>
+                    }
+                </div>
+
+            </div>
+        }
+    }
+</div>
+
+@code {
+    [Parameter] public List<PlacementScoreModel> Scores { get; set; } = [];
+}

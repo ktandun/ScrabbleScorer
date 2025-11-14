@@ -1,0 +1,87 @@
+.board {
+    display: grid;
+    grid-template-columns: repeat(15, 40px);
+    grid-template-rows: repeat(15, 40px);
+    background-color: #e6d3b1; /* light wood tone */
+    border: 2px solid #8b7d6b; /* outer border */
+    width: fit-content;
+    margin: auto;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+    cursor: pointer;
+}
+
+.cell {
+    width: 40px;
+    height: 40px;
+    background-color: #f9f3e7;
+    border: 1px solid #cbb89f; /* subtle grid line */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 14px;
+    text-transform: uppercase;
+    color: #333;
+}
+
+.cell.tw { background-color: #f4a7a7; }  /* Triple Word - red */
+.cell.dw { background-color: #f7d9a7; }  /* Double Word - orange */
+.cell.tl { background-color: #a7d4a4; }  /* Triple Letter - green */
+.cell.dl { background-color: #a7baf4; }  /* Double Letter - blue */
+.cell.clicked { background-color: #fd7e14; }
+.cell.center { background-color: #f0e58d; } /* Center star - yellowish */
+
+.tile {
+    background: #fffbe5;
+    border: 1px solid #bca77d;
+    border-radius: 4px;
+    width: 90%;
+    height: 90%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    font-weight: bold;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.tile small {
+    position: absolute;
+    bottom: 2px;
+    right: 4px;
+    font-size: 10px;
+    font-weight: normal;
+    opacity: 0.8;
+}
+
+
+.calculate-button {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    padding: 1rem 2.5rem;
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: white;
+    background-color: #007bff; /* blue */
+    border: none;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transition:
+        transform 0.1s ease,
+        box-shadow 0.1s ease,
+        background-color 0.2s ease;
+}
+
+.calculate-button:hover {
+    background-color: #0069d9;
+    transform: translateY(-3px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
+}
+
+.calculate-button:active {
+    background-color: #0056b3;
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}

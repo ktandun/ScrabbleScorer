@@ -1,26 +1,15 @@
-using ScrabbleScorer.Core.Constants;
-using ScrabbleScorer.Core.Utilities;
-
 namespace ScrabbleScorer.Core.Logic.Rules;
 
 public class WordShouldFitInsideBoard : IPlacementRule
 {
+    public int Order => 3;
+
     public Task<bool> ValidateAsync(Board board, PlacementModel placement)
     {
-        var currentCoordinate = placement.Coordinate;
-
-        for (var i = 0; i < placement.Letters.Count; i++)
-        {
-            var letter = board.GetLetterInCoordinate(currentCoordinate);
-
-            if (letter is not null)
-                i--;
-
-            currentCoordinate = currentCoordinate.NextTile(placement.Alignment);
-        }
+        var (finalCoordinate, _) = board.TryPlaceLetters(placement);
 
         return Task.FromResult(
-            currentCoordinate
+            finalCoordinate
                 is {
                     X: <= BoardCoordinateConstants.BoardSize,
                     Y: <= BoardCoordinateConstants.BoardSize

@@ -2,15 +2,10 @@ namespace ScrabbleScorer.Core.Models;
 
 public record Board
 {
-    public required BoardLetter[] BoardLetters { get; init; }
-
-    public Letter? GetLetterInCoordinate(Coordinate coordinate)
-    {
-        return BoardLetters.SingleOrDefault(x => x.Coordinate == coordinate)?.Letter;
-    }
+    public required LetterOnBoard[] BoardLetters { get; init; }
 }
 
-public record BoardLetter
+public record LetterOnBoard
 {
     public required Letter Letter { get; init; }
     public required Coordinate Coordinate { get; init; }
@@ -24,4 +19,13 @@ public record BonusTile
     public required BonusType BonusType { get; init; }
 }
 
-public record DictionaryWords(IEnumerable<string> Words);
+public record DictionaryWords(string[] Words);
+
+public record PlacementScoreModel(PlacementModel Placement, int Score);
+
+public record PlacementModel
+{
+    public required Coordinate Coordinate { get; init; }
+    public required Alignment Alignment { get; init; }
+    public required Letter[] Letters { get; init; } = [];
+}

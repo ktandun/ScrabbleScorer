@@ -1,6 +1,3 @@
-using Microsoft.Extensions.Caching.Memory;
-using ScrabbleScorer.Core.Constants;
-
 namespace ScrabbleScorer.Core.Repositories;
 
 public interface IWordRepository
@@ -10,26 +7,22 @@ public interface IWordRepository
 
 public class WordRepository : IWordRepository
 {
-    private const string WordsFile = "./Repositories/words.txt";
-    private readonly IMemoryCache _cache;
-
-    public WordRepository(IMemoryCache cache)
-    {
-        _cache = cache;
-    }
+    private readonly string _wordsFile = Path.Combine(
+        AppContext.BaseDirectory,
+        "Repositories",
+        "words.txt"
+    );
+    private static DictionaryWords? _words;
 
     public async Task<DictionaryWords> GetDictionaryWordsAsync()
     {
-        if (
-            _cache.TryGetValue(CacheKeys.Words, out var words)
-            && words?.GetType() == typeof(List<string>)
-        )
-            return new DictionaryWords((List<string>)words);
+        if (_words?.Words.Length > 0)
+        {
+            return _words;
+        }
 
-        var allScrabbleWords = await File.ReadAllLinesAsync(WordsFile);
-
-        _cache.Set(CacheKeys.Words, allScrabbleWords);
-
-        return new DictionaryWords(allScrabbleWords);
+        var allScrabbleWords = await File.ReadAllLinesAsync(_wordsFile);
+        _words = new DictionaryWords(allScrabbleWords);
+        return _words;
     }
 }
