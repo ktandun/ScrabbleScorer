@@ -1,8 +1,6 @@
-using System.Collections.Immutable;
-
 namespace ScrabbleScorer.Core.Constants;
 
-public static class BoardCoordinateConstants
+public static class BoardConstants
 {
     public const int BoardSize = 15;
     public static readonly Coordinate CentreTile = new(8, 8);
@@ -24,6 +22,41 @@ public static class BoardCoordinateConstants
     ];
 
     public static readonly Alignment[] AllAlignments = [Alignment.Horizontal, Alignment.Vertical];
+
+    public static readonly Letter[] AllLetters =
+    [
+        Letter.Blank,
+        Letter.A,
+        Letter.B,
+        Letter.C,
+        Letter.D,
+        Letter.E,
+        Letter.F,
+        Letter.G,
+        Letter.H,
+        Letter.I,
+        Letter.J,
+        Letter.K,
+        Letter.L,
+        Letter.M,
+        Letter.N,
+        Letter.O,
+        Letter.P,
+        Letter.Q,
+        Letter.R,
+        Letter.S,
+        Letter.T,
+        Letter.U,
+        Letter.V,
+        Letter.W,
+        Letter.X,
+        Letter.Y,
+        Letter.Z,
+    ];
+
+    public static readonly Letter[] AllLettersWithoutBlank = AllLetters
+        .Where(l => l != Letter.Blank)
+        .ToArray();
 
     public static readonly BonusTile[] BonusTiles =
     {

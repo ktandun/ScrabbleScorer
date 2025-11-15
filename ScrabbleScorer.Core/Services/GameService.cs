@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using System.Diagnostics;
 using ScrabbleScorer.Core.Logic.Rules;
 
 namespace ScrabbleScorer.Core.Services;
@@ -24,10 +25,19 @@ public class GameService : IGameService
         List<Letter> lettersOnHand
     )
     {
-        var allPlacements = GenerateAllPlacements(board, lettersOnHand);
+        var stopwatch = Stopwatch.StartNew();
+        var allPlacements = GenerateAllPlacements(board, lettersOnHand).ToArray();
+        Console.WriteLine("1 " + stopwatch.ElapsedMilliseconds);
+        stopwatch.Restart();
         var results = await ValidatePlacementsAsync(board, allPlacements);
+        Console.WriteLine("2 " + stopwatch.ElapsedMilliseconds);
+        stopwatch.Restart();
         var scoredPlacements = ScorePlacements(board, results);
+        Console.WriteLine("3 " + stopwatch.ElapsedMilliseconds);
+        stopwatch.Restart();
         var highestNScores = scoredPlacements.OrderByDescending(sp => sp.Score).Take(10).ToList();
+        Console.WriteLine("4 " + stopwatch.ElapsedMilliseconds);
+        stopwatch.Stop();
         return highestNScores;
     }
 
@@ -63,7 +73,7 @@ public class GameService : IGameService
     )
     {
         return (
-            from alignment in BoardCoordinateConstants.AllAlignments
+            from alignment in BoardConstants.AllAlignments
             from letters in CombinationUtils
                 .GetAllPermutationsOfAllSubsets(lettersOnHand)
                 .Distinct()

@@ -9,11 +9,7 @@ public class WordShouldFitInsideBoard : IPlacementRule
         var (firstCoordinate, finalCoordinate, _) = board.TryPlaceLetters(placement);
 
         return Task.FromResult(
-            finalCoordinate
-                is {
-                    X: <= BoardCoordinateConstants.BoardSize,
-                    Y: <= BoardCoordinateConstants.BoardSize
-                }
+            finalCoordinate is { X: <= BoardConstants.BoardSize, Y: <= BoardConstants.BoardSize }
                 && firstCoordinate is { X: >= 1, Y: >= 1 }
         );
     }

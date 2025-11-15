@@ -8,7 +8,7 @@ public class PlacementShouldBeNextToExistingPlacements : IPlacementRule
     {
         var isValid = board.IsEmpty() switch
         {
-            true => placement.IsTouchingCoordinate(board, BoardCoordinateConstants.CentreTile),
+            true => placement.IsTouchingCoordinate(board, BoardConstants.CentreTile),
             false => placement.IsTouchingOtherLetters(board),
         };
 

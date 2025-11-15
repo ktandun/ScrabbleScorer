@@ -8,7 +8,7 @@ public static class BoardUtility
     {
         var coordinates = new HashSet<Coordinate>();
 
-        foreach (var alignment in BoardCoordinateConstants.AllAlignments)
+        foreach (var alignment in BoardConstants.AllAlignments)
         {
             for (var i = 1; i <= distance; i++)
             {

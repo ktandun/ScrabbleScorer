@@ -7,12 +7,12 @@ using ScrabbleScorer.Web.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddSingleton<IWordRepository, WordRepository>();
-builder.Services.AddSingleton<IPlacementRule, PlacementShouldBeNextToExistingPlacements>();
-builder.Services.AddSingleton<IPlacementRule, TileShouldBeEmpty>();
+builder.Services.AddTransient<IPlacementRule, PlacementShouldBeNextToExistingPlacements>();
+builder.Services.AddTransient<IPlacementRule, TileShouldBeEmpty>();
+builder.Services.AddTransient<IPlacementRule, WordsCreatedShouldBeValid>();
+builder.Services.AddTransient<IPlacementRule, WordShouldFitInsideBoard>();
 
-builder.Services.AddSingleton<IPlacementRule, WordsCreatedShouldBeValid>();
-builder.Services.AddSingleton<IPlacementRule, WordShouldFitInsideBoard>();
+builder.Services.AddSingleton<IWordRepository, WordRepository>();
 builder.Services.AddSingleton<IGameService, GameService>();
 
 builder.Services.AddScoped<LocalStorageService>();

@@ -35,7 +35,7 @@ public static class ScoringUtility
         foreach (var letter in word)
         {
             var existingLetter = board.GetLetterInCoordinate(letter.Coordinate);
-            var bonusTile = BoardCoordinateConstants.BonusTiles.FirstOrDefault(bt =>
+            var bonusTile = BoardConstants.BonusTiles.FirstOrDefault(bt =>
                 bt.Coordinate == letter.Coordinate
             );
 
