@@ -23,53 +23,56 @@ public class WordsService : IWordsService
     public async Task<BoardLetter[]> ReadBoardFromScreenshotAsync(string screenshotFile)
     {
         using var boardSectionBitmap = ImageUtility.CropBoardSectionFromScreenshot(screenshotFile);
-        using var boardPartMonochrome = ImageUtility.ConvertToMonochromeWithContrast(boardSectionBitmap, 1.1f);
+        using var boardPartMonochrome = ImageUtility.ConvertToMonochromeWithContrast(
+            boardSectionBitmap,
+            1.1f
+        );
         using var boardBlackAndWhite = ImageUtility.RemoveColorsFromImage(boardPartMonochrome);
-        
+
         await using var database = new DatabaseContext();
 
-        var letterHashes = await database.LetterHashes
-            .Select(l => new { Letter = l.Letter, Hash = ImageUtility.ImageHashFromString(l.Hash) })
+        var letterHashes = await database
+            .LetterHashes.Select(l => new
+            {
+                Letter = l.Letter,
+                Hash = ImageUtility.ImageHashFromString(l.Hash),
+            })
             .ToArrayAsync();
 
         var foundLetters = new List<BoardLetter>();
-        
+
         const int n = 15;
-        
+
         for (var i = 0; i < n; i++)
         {
             for (var j = 0; j < n; j++)
             {
-                using var boardPart = ImageUtility.SplitBoardImage(
-                    boardBlackAndWhite,
-                    i,
-                    j,
-                    76
-                );
+                using var boardPart = ImageUtility.SplitBoardImage(boardBlackAndWhite, i, j, 76);
 
                 using var boardPartCropped = ImageUtility.CropImage(boardPart, 8, 8, 42, 59);
                 using var boardPartOnlyLetter = ImageUtility.CropOuterWhiteRegion(boardPartCropped);
-                using var boardPartOnlyLetterPadded = ImageUtility.AddPaddingWithWhiteBackground(boardPartOnlyLetter, 64);
-                
+                using var boardPartOnlyLetterPadded = ImageUtility.AddPaddingWithWhiteBackground(
+                    boardPartOnlyLetter,
+                    64
+                );
+
                 if (!ImageUtility.IsEmptyImage(boardPartOnlyLetter))
                 {
                     var imageHash = ImageUtility.GenerateImageHash(boardPartOnlyLetterPadded);
-                    
-                    var matchingLetter = letterHashes.MaxBy(
-                        lh =>
-                            ImageUtility.CalculateImageHashSimilarity(
-                                lh.Hash,
-                                imageHash
-                            )
+
+                    var matchingLetter = letterHashes.MaxBy(lh =>
+                        ImageUtility.CalculateImageHashSimilarity(lh.Hash, imageHash)
                     );
-                    
+
                     if (matchingLetter is not null)
                     {
-                        foundLetters.Add(new BoardLetter
-                        {
-                            Letter = matchingLetter.Letter.ToLetter(),
-                            Coordinate = GetCoordinateFromScreenshot(i, j)
-                        });
+                        foundLetters.Add(
+                            new BoardLetter
+                            {
+                                Letter = matchingLetter.Letter.ToLetter(),
+                                Coordinate = GetCoordinateFromScreenshot(i, j),
+                            }
+                        );
                     }
                 }
             }
@@ -80,7 +83,10 @@ public class WordsService : IWordsService
 
     private Coordinate GetCoordinateFromScreenshot(int i, int j)
     {
-        return new Coordinate(BoardCoordinateConstants.BoardSize - i, BoardCoordinateConstants.BoardSize - j);
+        return new Coordinate(
+            BoardCoordinateConstants.BoardSize - i,
+            BoardCoordinateConstants.BoardSize - j
+        );
     }
 
     public async Task<string[]> FindPossibleWordsAsync(
@@ -133,8 +139,8 @@ public class WordsService : IWordsService
                     select $"w.WordSorted like '{wc}'"
                 );
 
-                var matchingWords = await database.Words
-                    .FromSqlRaw($"{query} AND ({wordCombinationsPredicate})")
+                var matchingWords = await database
+                    .Words.FromSqlRaw($"{query} AND ({wordCombinationsPredicate})")
                     .Select(w => w.Word)
                     .ToArrayAsync();
 
@@ -181,29 +187,27 @@ public class WordsService : IWordsService
     {
         var occupiedCoordinates = board.BoardLetters.Select(bl => bl.Coordinate).ToHashSet();
 
-        return BoardCoordinateConstants.AllCoordinates
-            .Where(
-                c =>
-                    CoordinateUtility.CanMakeWordOnCoordinate(
-                        occupiedCoordinates,
-                        c,
-                        Alignment.Horizontal,
-                        wordLength,
-                        lettersOnHandLength
-                    )
+        return BoardCoordinateConstants
+            .AllCoordinates.Where(c =>
+                CoordinateUtility.CanMakeWordOnCoordinate(
+                    occupiedCoordinates,
+                    c,
+                    Alignment.Horizontal,
+                    wordLength,
+                    lettersOnHandLength
+                )
             )
             .Select(c => (c, Alignment.Horizontal))
             .Concat(
-                BoardCoordinateConstants.AllCoordinates
-                    .Where(
-                        c =>
-                            CoordinateUtility.CanMakeWordOnCoordinate(
-                                occupiedCoordinates,
-                                c,
-                                Alignment.Vertical,
-                                wordLength,
-                                lettersOnHandLength
-                            )
+                BoardCoordinateConstants
+                    .AllCoordinates.Where(c =>
+                        CoordinateUtility.CanMakeWordOnCoordinate(
+                            occupiedCoordinates,
+                            c,
+                            Alignment.Vertical,
+                            wordLength,
+                            lettersOnHandLength
+                        )
                     )
                     .Select(c => (c, Alignment.Vertical))
             )
@@ -266,7 +270,9 @@ public class WordsService : IWordsService
                 Coordinate = x.coordinate,
                 Alignment = x.alignment,
             }
-        ).OrderByDescending(x => x.Score).ToArray();
+        )
+            .OrderByDescending(x => x.Score)
+            .ToArray();
     }
 
     private async Task<bool> IsAdjacentWordsValidAsync(
@@ -282,7 +288,7 @@ public class WordsService : IWordsService
             alignment,
             word
         );
-        
+
         var boardLetterCoords = boardLettersAfterPlacement
             .Select(bl => bl.Coordinate)
             .ToImmutableHashSet();
@@ -354,8 +360,8 @@ public class WordsService : IWordsService
 
         for (var pos = 1; pos <= wordLength; pos++)
         {
-            var boardLetter = board.BoardLetters.FirstOrDefault(
-                bl => bl.Coordinate == currCoordinate
+            var boardLetter = board.BoardLetters.FirstOrDefault(bl =>
+                bl.Coordinate == currCoordinate
             );
 
             if (boardLetter is not null)

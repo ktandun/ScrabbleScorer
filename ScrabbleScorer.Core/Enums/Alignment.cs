@@ -3,7 +3,7 @@ namespace ScrabbleScorer.Core.Enums;
 public enum Alignment
 {
     Horizontal = 1,
-    Vertical = 2
+    Vertical = 2,
 }
 
 public static class AlignmentExtensions

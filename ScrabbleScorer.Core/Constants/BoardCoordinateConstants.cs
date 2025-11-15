@@ -20,7 +20,7 @@ public static class BoardCoordinateConstants
     [
         .. from y in Enumerable.Range(1, BoardSize)
         from x in Enumerable.Range(1, BoardSize)
-        select new Coordinate(x, y)
+        select new Coordinate(x, y),
     ];
 
     public static readonly Alignment[] AllAlignments = [Alignment.Horizontal, Alignment.Vertical];
@@ -87,6 +87,6 @@ public static class BoardCoordinateConstants
         new() { Coordinate = new Coordinate(4, 12), BonusType = BonusType.DW },
         new() { Coordinate = new Coordinate(12, 12), BonusType = BonusType.DW },
         new() { Coordinate = new Coordinate(5, 11), BonusType = BonusType.DW },
-        new() { Coordinate = new Coordinate(11, 11), BonusType = BonusType.DW }
+        new() { Coordinate = new Coordinate(11, 11), BonusType = BonusType.DW },
     };
 }

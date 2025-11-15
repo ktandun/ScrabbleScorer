@@ -77,7 +77,7 @@ await gameService.FindBestWordAsync(
             // new LetterOnBoard { Letter = Letter.H, Coordinate = new Coordinate(9, 6) },
             // new LetterOnBoard { Letter = Letter.A, Coordinate = new Coordinate(9, 7) },
             // new LetterOnBoard { Letter = Letter.E, Coordinate = new Coordinate(9, 9) },
-        ]
+        ],
     },
-    new List<Letter> { Letter.T, Letter.Blank, Letter.B, Letter.E, Letter.O, Letter.O, Letter.I, }
+    new List<Letter> { Letter.T, Letter.Blank, Letter.B, Letter.E, Letter.O, Letter.O, Letter.I }
 );

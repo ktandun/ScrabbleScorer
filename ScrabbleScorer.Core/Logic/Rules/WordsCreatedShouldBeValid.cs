@@ -31,7 +31,7 @@ public class WordsCreatedShouldBeValid : IPlacementRule
         {
             Coordinate = attemptedPlacement.firstCoordinate,
             Alignment = placement.Alignment,
-            Letters = mainWordInDictionary.Select(mw => mw.ToLetter()).ToArray()
+            Letters = mainWordInDictionary.Select(mw => mw.ToLetter()).ToArray(),
         };
 
         var oppositeAlignmentWords = board

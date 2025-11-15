@@ -9,7 +9,7 @@ public class PlacementShouldBeNextToExistingPlacements : IPlacementRule
         var isValid = board.IsEmpty() switch
         {
             true => placement.IsTouchingCoordinate(board, BoardCoordinateConstants.CentreTile),
-            false => placement.IsTouchingOtherLetters(board)
+            false => placement.IsTouchingOtherLetters(board),
         };
 
         return Task.FromResult(isValid);

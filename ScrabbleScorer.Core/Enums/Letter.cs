@@ -28,15 +28,40 @@ public enum Letter
     W,
     X,
     Y,
-    Z
+    Z,
 }
 
 public static class LetterHelper
 {
     public static readonly char[] AllLetters =
     {
-        '_', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T',
-        'U', 'V', 'W', 'X', 'Y', 'Z'
+        '_',
+        'A',
+        'B',
+        'C',
+        'D',
+        'E',
+        'F',
+        'G',
+        'H',
+        'I',
+        'J',
+        'K',
+        'L',
+        'M',
+        'N',
+        'O',
+        'P',
+        'Q',
+        'R',
+        'S',
+        'T',
+        'U',
+        'V',
+        'W',
+        'X',
+        'Y',
+        'Z',
     };
 }
 
@@ -75,7 +100,7 @@ public static class LetterExtensions
                 Letter.Y => 'Y',
                 Letter.Z => 'Z',
                 Letter.Blank => '_',
-                _ => throw new ArgumentOutOfRangeException(nameof(letter), letter, null)
+                _ => throw new ArgumentOutOfRangeException(nameof(letter), letter, null),
             };
         }
 
@@ -109,7 +134,7 @@ public static class LetterExtensions
                 Letter.X => 8,
                 Letter.Y => 4,
                 Letter.Z => 10,
-                _ => 0
+                _ => 0,
             };
         }
     }
@@ -173,7 +198,7 @@ public static class LetterExtensions
                 'x' => Letter.X,
                 'y' => Letter.Y,
                 'z' => Letter.Z,
-                _ => throw new ArgumentOutOfRangeException(nameof(letter), letter, null)
+                _ => throw new ArgumentOutOfRangeException(nameof(letter), letter, null),
             };
         }
     }

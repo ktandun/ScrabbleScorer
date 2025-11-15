@@ -11,8 +11,7 @@ public static class DictionaryWordsUtilities
             return dictionaryWords.Words.Contains(word, WordComparer);
         }
 
-        public bool ShouldContain(IEnumerable<string> words
-        )
+        public bool ShouldContain(IEnumerable<string> words)
         {
             // ReSharper disable once LoopCanBeConvertedToQuery
             // Easier for debugging

@@ -23,7 +23,7 @@ public class WordsCreatedShouldBeValidTests
             {
                 Coordinate = new Coordinate(1, 1),
                 Alignment = Alignment.Horizontal,
-                Letters = [Letter.C, Letter.A, Letter.T]
+                Letters = [Letter.C, Letter.A, Letter.T],
             }
         );
 
@@ -39,7 +39,7 @@ public class WordsCreatedShouldBeValidTests
             {
                 Coordinate = new Coordinate(1, 1),
                 Alignment = Alignment.Horizontal,
-                Letters = [Letter.C, Letter.Blank, Letter.T]
+                Letters = [Letter.C, Letter.Blank, Letter.T],
             }
         );
 
@@ -59,14 +59,14 @@ public class WordsCreatedShouldBeValidTests
                     new LetterOnBoard { Letter = Letter.C, Coordinate = new Coordinate(3, 1) },
                     new LetterOnBoard { Letter = Letter.A, Coordinate = new Coordinate(3, 2) },
                     new LetterOnBoard { Letter = Letter.C, Coordinate = new Coordinate(1, 3) },
-                    new LetterOnBoard { Letter = Letter.A, Coordinate = new Coordinate(2, 3) }
-                ]
+                    new LetterOnBoard { Letter = Letter.A, Coordinate = new Coordinate(2, 3) },
+                ],
             },
             new PlacementModel
             {
                 Coordinate = new Coordinate(3, 3),
                 Alignment = alignment,
-                Letters = [Letter.B, Letter.L, Letter.E]
+                Letters = [Letter.B, Letter.L, Letter.E],
             }
         );
 
@@ -83,14 +83,14 @@ public class WordsCreatedShouldBeValidTests
                 [
                     new LetterOnBoard { Letter = Letter.C, Coordinate = new Coordinate(1, 1) },
                     new LetterOnBoard { Letter = Letter.A, Coordinate = new Coordinate(1, 2) },
-                    new LetterOnBoard { Letter = Letter.T, Coordinate = new Coordinate(1, 4) }
-                ]
+                    new LetterOnBoard { Letter = Letter.T, Coordinate = new Coordinate(1, 4) },
+                ],
             },
             new PlacementModel
             {
                 Coordinate = new Coordinate(1, 3),
                 Alignment = Alignment.Vertical,
-                Letters = [Letter.S]
+                Letters = [Letter.S],
             }
         );
 
@@ -108,14 +108,14 @@ public class WordsCreatedShouldBeValidTests
                     new LetterOnBoard { Letter = Letter.W, Coordinate = new Coordinate(1, 1) },
                     new LetterOnBoard { Letter = Letter.H, Coordinate = new Coordinate(2, 1) },
                     new LetterOnBoard { Letter = Letter.O, Coordinate = new Coordinate(3, 1) },
-                    new LetterOnBoard { Letter = Letter.A, Coordinate = new Coordinate(4, 1) }
-                ]
+                    new LetterOnBoard { Letter = Letter.A, Coordinate = new Coordinate(4, 1) },
+                ],
             },
             new PlacementModel
             {
                 Coordinate = new Coordinate(2, 2),
                 Alignment = Alignment.Horizontal,
-                Letters = [Letter.E, Letter.N, Letter.A, Letter.C, Letter.T]
+                Letters = [Letter.E, Letter.N, Letter.A, Letter.C, Letter.T],
             }
         );
 
@@ -160,14 +160,14 @@ public class WordsCreatedShouldBeValidTests
                     new LetterOnBoard { Letter = Letter.A, Coordinate = new Coordinate(4, 4) },
                     new LetterOnBoard { Letter = Letter.T, Coordinate = new Coordinate(5, 4) },
                     new LetterOnBoard { Letter = Letter.E, Coordinate = new Coordinate(6, 4) },
-                    new LetterOnBoard { Letter = Letter.D, Coordinate = new Coordinate(7, 4) }
-                ]
+                    new LetterOnBoard { Letter = Letter.D, Coordinate = new Coordinate(7, 4) },
+                ],
             },
             new PlacementModel
             {
                 Coordinate = new Coordinate(1, 5),
                 Alignment = Alignment.Horizontal,
-                Letters = [Letter.R, Letter.E, Letter.S, Letter.E, Letter.E, Letter.D, Letter.S]
+                Letters = [Letter.R, Letter.E, Letter.S, Letter.E, Letter.E, Letter.D, Letter.S],
             }
         );
 

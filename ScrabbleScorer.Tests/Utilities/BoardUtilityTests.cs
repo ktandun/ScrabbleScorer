@@ -16,7 +16,7 @@ public class BoardUtilityTests
             {
                 Coordinate = new Coordinate(7, 8),
                 Alignment = Alignment.Horizontal,
-                Letters = [Letter.X, Letter.Y, Letter.Z]
+                Letters = [Letter.X, Letter.Y, Letter.Z],
             }
         );
 

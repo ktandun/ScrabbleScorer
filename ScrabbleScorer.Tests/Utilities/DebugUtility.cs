@@ -69,7 +69,7 @@ public static class DebugUtility
         var template = Handlebars.Compile(source);
         var data = new
         {
-            grid = ShowHighlightedGrids(occupiedCoordinates, possibleLetterCoordinates)
+            grid = ShowHighlightedGrids(occupiedCoordinates, possibleLetterCoordinates),
         };
 
         var html = template(data);
@@ -114,7 +114,7 @@ public static class DebugUtility
                     ),
                     Occupied = occupiedCoordinates.Any(oc => oc.X == x && oc.Y == y),
                     X = x,
-                    Y = y
+                    Y = y,
                 }
             ).ToArray()
         ).ToArray();

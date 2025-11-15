@@ -47,7 +47,7 @@ public static class ScoringUtility
                 {
                     BonusType.DL => letter.Letter.ToLetterValue() * 2,
                     BonusType.TL => letter.Letter.ToLetterValue() * 3,
-                    _ => letter.Letter.ToLetterValue()
+                    _ => letter.Letter.ToLetterValue(),
                 };
             }
             else
@@ -68,7 +68,7 @@ public static class ScoringUtility
             {
                 BonusType.DW => 2,
                 BonusType.TW => 3,
-                _ => 1
+                _ => 1,
             };
         }
 

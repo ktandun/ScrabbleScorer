@@ -76,7 +76,7 @@ public class GameService : IGameService
             {
                 Coordinate = coordinate,
                 Alignment = alignment,
-                Letters = lettersArray
+                Letters = lettersArray,
             }
         );
     }

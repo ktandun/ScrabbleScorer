@@ -8,15 +8,18 @@ public static class BoardUtility
     {
         var coordinates = new HashSet<Coordinate>();
 
-
         foreach (var alignment in BoardCoordinateConstants.AllAlignments)
         {
             for (var i = 1; i <= distance; i++)
             {
                 coordinates.Add(coordinate.NextTile(alignment, i));
-                coordinates.Add(coordinate.NextTile(alignment).NextTile(alignment.Opposite(), i-1));
+                coordinates.Add(
+                    coordinate.NextTile(alignment).NextTile(alignment.Opposite(), i - 1)
+                );
                 coordinates.Add(coordinate.PrevTile(alignment.Opposite(), i));
-                coordinates.Add(coordinate.PrevTile(alignment.Opposite()).PrevTile(alignment, i-1));
+                coordinates.Add(
+                    coordinate.PrevTile(alignment.Opposite()).PrevTile(alignment, i - 1)
+                );
             }
         }
 
@@ -35,9 +38,11 @@ public static class BoardUtility
             return board.BoardLetters.SingleOrDefault(x => x.Coordinate == coordinate)?.Letter;
         }
 
-
-        public (Coordinate firstCoordinate, Coordinate finalCoordinate, List<LetterOnBoard> wordCreated) TryPlaceLetters(PlacementModel placement
-        )
+        public (
+            Coordinate firstCoordinate,
+            Coordinate finalCoordinate,
+            List<LetterOnBoard> wordCreated
+        ) TryPlaceLetters(PlacementModel placement)
         {
             var currCoord = placement.Coordinate;
             var letters = new List<LetterOnBoard>();
@@ -46,19 +51,17 @@ public static class BoardUtility
             {
                 while (board.GetLetterInCoordinate(currCoord) is not null)
                 {
-                    letters.Add(new LetterOnBoard
-                    {
-                        Letter = board.GetLetterInCoordinate(currCoord)!.Value,
-                        Coordinate = currCoord
-                    });
+                    letters.Add(
+                        new LetterOnBoard
+                        {
+                            Letter = board.GetLetterInCoordinate(currCoord)!.Value,
+                            Coordinate = currCoord,
+                        }
+                    );
                     currCoord = currCoord.NextTile(placement.Alignment);
                 }
 
-                letters.Add(new LetterOnBoard
-                {
-                    Letter = letter,
-                    Coordinate = currCoord
-                });
+                letters.Add(new LetterOnBoard { Letter = letter, Coordinate = currCoord });
 
                 currCoord = currCoord.NextTile(placement.Alignment);
             }
@@ -73,29 +76,33 @@ public static class BoardUtility
             return (firstCoordinate, currCoord.PrevTile(placement.Alignment), wordCreated);
         }
 
-        public List<List<LetterOnBoard>> GetCreatedWordsOppositeAlignment(PlacementModel placement
-        )
+        public List<List<LetterOnBoard>> GetCreatedWordsOppositeAlignment(PlacementModel placement)
         {
             var oppositeAlignment = placement.Alignment.Opposite();
 
             var letters = placement
-                .Letters.Select((letter, index) =>
-                    TryPlaceLetters(
-                        board,
-                        placement with
-                        {
-                            Coordinate = placement.Coordinate.NextTile(placement.Alignment, index),
-                            Alignment = oppositeAlignment,
-                            Letters = [letter]
-                        }
-                    ).wordCreated
+                .Letters.Select(
+                    (letter, index) =>
+                        TryPlaceLetters(
+                            board,
+                            placement with
+                            {
+                                Coordinate = placement.Coordinate.NextTile(
+                                    placement.Alignment,
+                                    index
+                                ),
+                                Alignment = oppositeAlignment,
+                                Letters = [letter],
+                            }
+                        ).wordCreated
                 )
                 .ToList();
 
             return letters.ToList();
         }
 
-        private (Coordinate finalCoordinate, List<LetterOnBoard> letters) GetPlacementPrefixLetters(PlacementModel placement
+        private (Coordinate finalCoordinate, List<LetterOnBoard> letters) GetPlacementPrefixLetters(
+            PlacementModel placement
         )
         {
             var letters = new List<LetterOnBoard>();
@@ -106,11 +113,9 @@ public static class BoardUtility
                 var letter = board.GetLetterInCoordinate(currentCoordinate);
 
                 if (letter is not null)
-                    letters.Add(new LetterOnBoard
-                    {
-                        Letter = letter.Value,
-                        Coordinate = currentCoordinate
-                    });
+                    letters.Add(
+                        new LetterOnBoard { Letter = letter.Value, Coordinate = currentCoordinate }
+                    );
                 else
                     break;
 
@@ -122,7 +127,8 @@ public static class BoardUtility
             return (currentCoordinate.NextTile(placement.Alignment), letters);
         }
 
-        private List<LetterOnBoard> GetPlacementSuffixLetters(Coordinate lastLetterCoordinate,
+        private List<LetterOnBoard> GetPlacementSuffixLetters(
+            Coordinate lastLetterCoordinate,
             Alignment alignment
         )
         {
@@ -134,11 +140,9 @@ public static class BoardUtility
                 var letter = board.GetLetterInCoordinate(currentCoordinate);
 
                 if (letter is not null)
-                    letters.Add(new LetterOnBoard
-                    {
-                        Letter = letter.Value,
-                        Coordinate = currentCoordinate
-                    });
+                    letters.Add(
+                        new LetterOnBoard { Letter = letter.Value, Coordinate = currentCoordinate }
+                    );
                 else
                     break;
 

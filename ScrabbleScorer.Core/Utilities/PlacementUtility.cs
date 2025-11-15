@@ -6,9 +6,7 @@ public static class PlacementUtility
 {
     extension(PlacementModel placement)
     {
-        public bool IsTouchingCoordinate(Board board,
-            Coordinate coordinate
-        )
+        public bool IsTouchingCoordinate(Board board, Coordinate coordinate)
         {
             var currCoord = placement.Coordinate;
 
@@ -33,20 +31,33 @@ public static class PlacementUtility
             var allNeighbourCoordinates = new List<Coordinate>();
 
             var beforeFirstTile = placement.Coordinate.PrevTile(placement.Alignment);
-            var afterLastTile = placement.Coordinate.NextTile(placement.Alignment, placement.Letters.Count);
+            var afterLastTile = placement.Coordinate.NextTile(
+                placement.Alignment,
+                placement.Letters.Count
+            );
 
             allNeighbourCoordinates.Add(beforeFirstTile);
 
             for (var i = 0; i < placement.Letters.Count; i++)
             {
-                allNeighbourCoordinates.Add(placement.Coordinate.NextTile(placement.Alignment, i).PrevTile(oppositeAlignment));
+                allNeighbourCoordinates.Add(
+                    placement
+                        .Coordinate.NextTile(placement.Alignment, i)
+                        .PrevTile(oppositeAlignment)
+                );
                 allNeighbourCoordinates.Add(placement.Coordinate.NextTile(placement.Alignment, i));
-                allNeighbourCoordinates.Add(placement.Coordinate.NextTile(placement.Alignment, i).NextTile(oppositeAlignment));
+                allNeighbourCoordinates.Add(
+                    placement
+                        .Coordinate.NextTile(placement.Alignment, i)
+                        .NextTile(oppositeAlignment)
+                );
             }
 
             allNeighbourCoordinates.Add(afterLastTile);
 
-            var isTouching = allNeighbourCoordinates.Any(c => board.GetLetterInCoordinate(c) is not null);
+            var isTouching = allNeighbourCoordinates.Any(c =>
+                board.GetLetterInCoordinate(c) is not null
+            );
 
             return isTouching;
         }

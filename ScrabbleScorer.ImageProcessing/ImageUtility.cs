@@ -6,17 +6,19 @@ public static class ImageUtility
 {
     private const int BoardHeight = 1170;
     private const int BoardWidth = 1170;
-    
+
     public static SKBitmap ConvertToMonochromeWithContrast(SKBitmap bitmap, float contrastFactor)
     {
         var outputBitmap = new SKBitmap(bitmap.Width, bitmap.Height);
-        
+
         for (var y = 0; y < bitmap.Height; y++)
         {
             for (var x = 0; x < bitmap.Width; x++)
             {
                 var pixelColor = bitmap.GetPixel(x, y);
-                var grayValue = (byte)(0.2989 * pixelColor.Red + 0.5870 * pixelColor.Green + 0.1140 * pixelColor.Blue);
+                var grayValue = (byte)(
+                    0.2989 * pixelColor.Red + 0.5870 * pixelColor.Green + 0.1140 * pixelColor.Blue
+                );
 
                 var newPixelColor = new SKColor(grayValue, grayValue, grayValue, pixelColor.Alpha);
                 outputBitmap.SetPixel(x, y, newPixelColor);
@@ -25,7 +27,7 @@ public static class ImageUtility
 
         return outputBitmap;
     }
-    
+
     public static SKBitmap ReadImageFromFile(string filename)
     {
         return SKBitmap.Decode(filename);
@@ -65,7 +67,7 @@ public static class ImageUtility
                 );
 
                 var bwColor = grayValue >= threshold ? SKColors.White : SKColors.Black;
-                
+
                 bwImage.SetPixel(x, y, bwColor);
             }
         }
@@ -103,13 +105,19 @@ public static class ImageUtility
             BoardWidth,
             boardEndHeightPixel.Value + BoardHeight
         );
-        
+
         canvas.DrawBitmap(image, sourceRect, SKRect.Create(BoardWidth, BoardHeight));
 
         return outputImage;
     }
 
-    public static SKBitmap CropImage(SKBitmap originalImage, int top, int left, int height, int width)
+    public static SKBitmap CropImage(
+        SKBitmap originalImage,
+        int top,
+        int left,
+        int height,
+        int width
+    )
     {
         var outputImage = new SKBitmap(width, height);
 
@@ -120,7 +128,7 @@ public static class ImageUtility
 
         return outputImage;
     }
-    
+
     public static SKBitmap CropLetterFromImage(SKBitmap originalImage)
     {
         var (startX, startY) = (0, 0);
@@ -133,7 +141,7 @@ public static class ImageUtility
 
         return outputImage;
     }
-    
+
     public static void SaveImage(SKBitmap skBitmap, string outputFilePath)
     {
         using var image = SKImage.FromBitmap(skBitmap);
@@ -164,9 +172,9 @@ public static class ImageUtility
             }
         }
 
-        return whiteCount > blackCount && (double) whiteCount / (whiteCount + blackCount) > 0.9;
+        return whiteCount > blackCount && (double)whiteCount / (whiteCount + blackCount) > 0.9;
     }
-    
+
     public static bool IsDarkImage(SKBitmap skBitmap)
     {
         var whiteCount = 0;
@@ -183,7 +191,7 @@ public static class ImageUtility
             }
         }
 
-        return blackCount > whiteCount && (double) blackCount / (whiteCount + blackCount) > 0.9;
+        return blackCount > whiteCount && (double)blackCount / (whiteCount + blackCount) > 0.9;
     }
 
     public static bool[] GenerateImageHash(SKBitmap bitmap)
@@ -219,7 +227,7 @@ public static class ImageUtility
 
         return (float)similarCount / hashOne.Length;
     }
-    
+
     public static SKBitmap CropOuterWhiteRegion(SKBitmap inputImage)
     {
         var width = inputImage.Width;
@@ -231,7 +239,7 @@ public static class ImageUtility
         var right = -1;
 
         var foundNonWhitePixel = false;
-        
+
         for (var y = 0; y < height; y++)
         {
             for (var x = 0; x < width; x++)
@@ -272,7 +280,7 @@ public static class ImageUtility
 
         return croppedImage;
     }
-    
+
     public static SKBitmap AddPaddingWithWhiteBackground(SKBitmap inputImage, int size)
     {
         var originalWidth = inputImage.Width;
