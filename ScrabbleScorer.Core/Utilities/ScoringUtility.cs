@@ -19,7 +19,7 @@ public static class ScoringUtility
 
         var totalScore = allCreatedWords.Sum(letters => CalculateWordScore(board, letters));
 
-        if (placement.Letters.Length == 7)
+        if (placement.Letters.Count == 7)
         {
             totalScore += 50;
         }

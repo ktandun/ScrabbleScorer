@@ -24,7 +24,7 @@ public class WordsCreatedShouldBeValid : IPlacementRule
             .Select(w => w.ToWord())
             .ToList();
 
-        return placement.Letters.Length switch
+        return placement.Letters.Count switch
         {
             1
                 => dictionaryWords.ShouldContain(word)

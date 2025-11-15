@@ -27,5 +27,5 @@ public record PlacementModel
 {
     public required Coordinate Coordinate { get; init; }
     public required Alignment Alignment { get; init; }
-    public required Letter[] Letters { get; init; } = [];
+    public required IReadOnlyList<Letter> Letters { get; init; } = [];
 }

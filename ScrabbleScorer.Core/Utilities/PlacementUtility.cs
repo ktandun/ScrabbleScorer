@@ -12,7 +12,7 @@ public static class PlacementUtility
         {
             var currCoord = placement.Coordinate;
 
-            for (var i = 0; i < placement.Letters.Length; i++)
+            for (var i = 0; i < placement.Letters.Count; i++)
             {
                 while (board.GetLetterInCoordinate(currCoord) is not null)
                     currCoord = currCoord.NextTile(placement.Alignment);
@@ -33,11 +33,11 @@ public static class PlacementUtility
             var allNeighbourCoordinates = new List<Coordinate>();
 
             var beforeFirstTile = placement.Coordinate.PrevTile(placement.Alignment);
-            var afterLastTile = placement.Coordinate.NextTile(placement.Alignment, placement.Letters.Length);
+            var afterLastTile = placement.Coordinate.NextTile(placement.Alignment, placement.Letters.Count);
 
             allNeighbourCoordinates.Add(beforeFirstTile);
 
-            for (var i = 0; i < placement.Letters.Length; i++)
+            for (var i = 0; i < placement.Letters.Count; i++)
             {
                 allNeighbourCoordinates.Add(placement.Coordinate.NextTile(placement.Alignment, i).PrevTile(oppositeAlignment));
                 allNeighbourCoordinates.Add(placement.Coordinate.NextTile(placement.Alignment, i));
