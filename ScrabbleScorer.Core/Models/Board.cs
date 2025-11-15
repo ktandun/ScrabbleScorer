@@ -2,7 +2,7 @@ namespace ScrabbleScorer.Core.Models;
 
 public record Board
 {
-    public required LetterOnBoard[] BoardLetters { get; init; }
+    public LetterOnBoard[] BoardLetters { get; init; } = [];
 }
 
 public record LetterOnBoard

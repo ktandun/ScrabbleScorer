@@ -1,12 +1,14 @@
 ﻿@page "/"
-@using Microsoft.VisualBasic
+@using System.Text.Json
 @using ScrabbleScorer.Core.Constants
 @using ScrabbleScorer.Core.Enums
 @using ScrabbleScorer.Core.Models
 @using ScrabbleScorer.Core.Services
 @using ScrabbleScorer.Core.Utilities
 @using ScrabbleScorer.Web.Components.Shared
+@using ScrabbleScorer.Web.Services
 @inject IGameService GameService
+@inject LocalStorageService LocalStorage
 @rendermode InteractiveServer
 
 <PageTitle>Home</PageTitle>
@@ -69,37 +71,24 @@
 
     protected override void OnInitialized()
     {
-        Board = new Board
+        Board = new Board();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
         {
-            BoardLetters =
-            [
-                new LetterOnBoard { Letter = Letter.F, Coordinate = new Coordinate(7, 8), },
-                new LetterOnBoard { Letter = Letter.R, Coordinate = new Coordinate(8, 8), },
-                new LetterOnBoard { Letter = Letter.O, Coordinate = new Coordinate(9, 8), },
-                new LetterOnBoard { Letter = Letter.N, Coordinate = new Coordinate(10, 8), },
-                new LetterOnBoard { Letter = Letter.T, Coordinate = new Coordinate(11, 8), },
-                new LetterOnBoard { Letter = Letter.S, Coordinate = new Coordinate(12, 8), },
-                //
-                new LetterOnBoard { Letter = Letter.C, Coordinate = new Coordinate(12, 9), },
-                new LetterOnBoard { Letter = Letter.O, Coordinate = new Coordinate(12, 10), },
-                new LetterOnBoard { Letter = Letter.L, Coordinate = new Coordinate(12, 11), },
-                new LetterOnBoard { Letter = Letter.E, Coordinate = new Coordinate(12, 12), },
-                new LetterOnBoard { Letter = Letter.X, Coordinate = new Coordinate(12, 13), },
-                //
-                new LetterOnBoard { Letter = Letter.B, Coordinate = new Coordinate(11, 10), },
-                new LetterOnBoard { Letter = Letter.A, Coordinate = new Coordinate(11, 11), },
-                new LetterOnBoard { Letter = Letter.Y, Coordinate = new Coordinate(11, 12), },
-                //
-                new LetterOnBoard { Letter = Letter.I, Coordinate = new Coordinate(13, 13), },
-            ]
-        };
+            Board = await LocalStorage.GetItemAsync<Board>("board") ?? new Board();
+
+            StateHasChanged();
+        }
     }
 
     private async Task OnClick()
     {
         try
         {
-            _calculateBtnText = "Calculating...";
+            _calculateBtnText = "Calculating... This might take a while";
 
             var highestNScores = await GameService.FindBestWordAsync(Board, _playerLetters);
 
@@ -112,10 +101,10 @@
         }
     }
 
-    private void HandleKeyPress(string key)
+    private async Task HandleKeyPress(string key)
     {
         _lastKey = key.ToCharArray()[0].ToLetter();
-        UpdateBoard();
+        await UpdateBoard();
         UpdatePlayerHand();
     }
 
@@ -158,7 +147,7 @@
         _playerLetters.Add(_lastKey.Value);
     }
 
-    private void UpdateBoard()
+    private async Task UpdateBoard()
     {
         if (_lastCoordinate is null || _lastKey is null) return;
         if (!_isUpdatingBoard) return;
@@ -191,5 +180,7 @@
         }
 
         _lastCoordinate = _lastCoordinate.NextTile(Alignment.Horizontal);
+
+        await LocalStorage.SetItemAsync("board", Board);
     }
 }

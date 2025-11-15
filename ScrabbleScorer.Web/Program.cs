@@ -2,6 +2,7 @@ using ScrabbleScorer.Core.Logic.Rules;
 using ScrabbleScorer.Core.Repositories;
 using ScrabbleScorer.Core.Services;
 using ScrabbleScorer.Web.Components;
+using ScrabbleScorer.Web.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,6 +14,8 @@ builder.Services.AddSingleton<IPlacementRule, TileShouldBeEmpty>();
 builder.Services.AddSingleton<IPlacementRule, WordsCreatedShouldBeValid>();
 builder.Services.AddSingleton<IPlacementRule, WordShouldFitInsideBoard>();
 builder.Services.AddSingleton<IGameService, GameService>();
+
+builder.Services.AddScoped<LocalStorageService>();
 
 builder.Services.AddRazorComponents().AddInteractiveServerComponents();
 
