@@ -63,11 +63,8 @@
 
     private readonly List<Letter> _playerLetters =
     [
-        Letter.D,
-        Letter.A,
-        Letter.B,
-        Letter.O,
-        Letter.R
+        Letter.Blank,
+        Letter.Blank,
     ];
 
     protected override void OnInitialized()
@@ -76,11 +73,24 @@
         {
             BoardLetters =
             [
-                new LetterOnBoard
-                {
-                    Letter = Letter.A,
-                    Coordinate = new Coordinate(8, 8)
-                }
+                new LetterOnBoard { Letter = Letter.F, Coordinate = new Coordinate(7, 8), },
+                new LetterOnBoard { Letter = Letter.R, Coordinate = new Coordinate(8, 8), },
+                new LetterOnBoard { Letter = Letter.O, Coordinate = new Coordinate(9, 8), },
+                new LetterOnBoard { Letter = Letter.N, Coordinate = new Coordinate(10, 8), },
+                new LetterOnBoard { Letter = Letter.T, Coordinate = new Coordinate(11, 8), },
+                new LetterOnBoard { Letter = Letter.S, Coordinate = new Coordinate(12, 8), },
+                //
+                new LetterOnBoard { Letter = Letter.C, Coordinate = new Coordinate(12, 9), },
+                new LetterOnBoard { Letter = Letter.O, Coordinate = new Coordinate(12, 10), },
+                new LetterOnBoard { Letter = Letter.L, Coordinate = new Coordinate(12, 11), },
+                new LetterOnBoard { Letter = Letter.E, Coordinate = new Coordinate(12, 12), },
+                new LetterOnBoard { Letter = Letter.X, Coordinate = new Coordinate(12, 13), },
+                //
+                new LetterOnBoard { Letter = Letter.B, Coordinate = new Coordinate(11, 10), },
+                new LetterOnBoard { Letter = Letter.A, Coordinate = new Coordinate(11, 11), },
+                new LetterOnBoard { Letter = Letter.Y, Coordinate = new Coordinate(11, 12), },
+                //
+                new LetterOnBoard { Letter = Letter.I, Coordinate = new Coordinate(13, 13), },
             ]
         };
     }

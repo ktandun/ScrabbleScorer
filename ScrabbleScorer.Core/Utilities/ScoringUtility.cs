@@ -8,13 +8,14 @@ public static class ScoringUtility
     {
         var allCreatedWords = new List<List<LetterOnBoard>>();
 
-        var word = board.GetCreatedWordOfAlignment(placement);
+        var word = board.TryPlaceLetters(placement);
+
         var oppositeAlignmentWords = board
             .GetCreatedWordsOppositeAlignment(placement)
             .Where(w => w.ToWord().Length > 1)
             .ToList();
 
-        allCreatedWords.Add(word);
+        allCreatedWords.Add(word.wordCreated);
         allCreatedWords.AddRange(oppositeAlignmentWords);
 
         var totalScore = allCreatedWords.Sum(letters => CalculateWordScore(board, letters));

@@ -2,11 +2,11 @@ namespace ScrabbleScorer.Core.Logic.Rules;
 
 public class WordShouldFitInsideBoard : IPlacementRule
 {
-    public int Order => 3;
+    public int Order => 2;
 
     public Task<bool> ValidateAsync(Board board, PlacementModel placement)
     {
-        var (finalCoordinate, _) = board.TryPlaceLetters(placement);
+        var (firstCoordinate, finalCoordinate, _) = board.TryPlaceLetters(placement);
 
         return Task.FromResult(
             finalCoordinate
@@ -14,6 +14,7 @@ public class WordShouldFitInsideBoard : IPlacementRule
                     X: <= BoardCoordinateConstants.BoardSize,
                     Y: <= BoardCoordinateConstants.BoardSize
                 }
+                && firstCoordinate is { X: >= 1, Y: >= 1 }
         );
     }
 }

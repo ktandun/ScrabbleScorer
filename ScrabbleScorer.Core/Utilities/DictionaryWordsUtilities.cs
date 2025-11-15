@@ -22,6 +22,11 @@ public static class DictionaryWordsUtilities
 
             return true;
         }
+
+        public string? FindFirstMatching(string word)
+        {
+            return dictionaryWords.Words.FirstOrDefault(w => WordComparer.Equals(w, word));
+        }
     }
 }
 

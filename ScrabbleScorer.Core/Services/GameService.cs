@@ -26,10 +26,22 @@ public class GameService : IGameService
     )
     {
         var allPlacements = GenerateAllPlacements(board, lettersOnHand);
+        var results = await ValidatePlacementsAsync(board, allPlacements);
+        var scoredPlacements = ScorePlacements(board, results);
+        var highestNScores = scoredPlacements.OrderByDescending(sp => sp.Score).Take(10).ToList();
+        return highestNScores;
+    }
+
+    private async Task<List<PlacementModel>> ValidatePlacementsAsync(
+        Board board,
+        IEnumerable<PlacementModel> allPlacements
+    )
+    {
         var validPlacements = new ConcurrentBag<PlacementModel>();
 
         await Parallel.ForEachAsync(
             allPlacements,
+            new ParallelOptions { MaxDegreeOfParallelism = 8 },
             async (placement, token) =>
             {
                 if (await ValidatePlacementAsync(board, placement) is not null)
@@ -38,12 +50,7 @@ public class GameService : IGameService
         );
 
         var results = validPlacements.Distinct().ToList();
-
-        var scoredPlacements = ScorePlacements(board, results);
-
-        var highestNScores = scoredPlacements.OrderByDescending(sp => sp.Score).Take(10).ToList();
-
-        return highestNScores;
+        return results;
     }
 
     private List<PlacementScoreModel> ScorePlacements(Board board, List<PlacementModel> placements)
@@ -56,20 +63,22 @@ public class GameService : IGameService
         List<Letter> lettersOnHand
     )
     {
-        return from coordinate in board.BoardLetters.SelectMany(bl =>
-                BoardUtility.GetAllCoordinatesWithinDistance(bl.Coordinate, 7)
-            )
+        return (
             from alignment in BoardCoordinateConstants.AllAlignments
             from letters in CombinationUtils
                 .GetAllPermutationsOfAllSubsets(lettersOnHand)
                 .Distinct()
-            where letters.Count >= 3
+            let lettersArray = letters.ToArray()
+            from coordinate in board.BoardLetters.SelectMany(bl =>
+                BoardUtility.GetAllCoordinatesWithinDistance(bl.Coordinate, lettersArray.Length)
+            )
             select new PlacementModel
             {
                 Coordinate = coordinate,
                 Alignment = alignment,
-                Letters = letters.ToArray()
-            };
+                Letters = lettersArray
+            }
+        );
     }
 
     private async Task<PlacementModel?> ValidatePlacementAsync(

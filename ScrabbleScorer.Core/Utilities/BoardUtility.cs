@@ -36,7 +36,7 @@ public static class BoardUtility
         }
 
 
-        public (Coordinate finalCoordinate, List<LetterOnBoard> wordCreated) TryPlaceLetters(PlacementModel placement
+        public (Coordinate firstCoordinate, Coordinate finalCoordinate, List<LetterOnBoard> wordCreated) TryPlaceLetters(PlacementModel placement
         )
         {
             var currCoord = placement.Coordinate;
@@ -63,13 +63,14 @@ public static class BoardUtility
                 currCoord = currCoord.NextTile(placement.Alignment);
             }
 
-            var wordCreated = board
-                .GetPlacementPrefixLetters(placement)
+            var (firstCoordinate, prefixLetters) = board.GetPlacementPrefixLetters(placement);
+
+            var wordCreated = prefixLetters
                 .Concat(letters)
                 .Concat(board.GetPlacementSuffixLetters(currCoord, placement.Alignment))
                 .ToList();
 
-            return (currCoord.PrevTile(placement.Alignment), wordCreated);
+            return (firstCoordinate, currCoord.PrevTile(placement.Alignment), wordCreated);
         }
 
         public List<List<LetterOnBoard>> GetCreatedWordsOppositeAlignment(PlacementModel placement
@@ -79,7 +80,7 @@ public static class BoardUtility
 
             var letters = placement
                 .Letters.Select((letter, index) =>
-                    GetCreatedWordOfAlignment(
+                    TryPlaceLetters(
                         board,
                         placement with
                         {
@@ -87,21 +88,14 @@ public static class BoardUtility
                             Alignment = oppositeAlignment,
                             Letters = [letter]
                         }
-                    )
+                    ).wordCreated
                 )
                 .ToList();
 
             return letters.ToList();
         }
 
-        public List<LetterOnBoard> GetCreatedWordOfAlignment(PlacementModel placement)
-        {
-            var (_, letters) = board.TryPlaceLetters(placement);
-
-            return letters;
-        }
-
-        private List<LetterOnBoard> GetPlacementPrefixLetters(PlacementModel placement
+        private (Coordinate finalCoordinate, List<LetterOnBoard> letters) GetPlacementPrefixLetters(PlacementModel placement
         )
         {
             var letters = new List<LetterOnBoard>();
@@ -125,7 +119,7 @@ public static class BoardUtility
 
             letters.Reverse();
 
-            return letters;
+            return (currentCoordinate.NextTile(placement.Alignment), letters);
         }
 
         private List<LetterOnBoard> GetPlacementSuffixLetters(Coordinate lastLetterCoordinate,

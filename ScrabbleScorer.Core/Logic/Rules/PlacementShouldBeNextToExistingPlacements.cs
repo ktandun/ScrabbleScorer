@@ -2,7 +2,7 @@ namespace ScrabbleScorer.Core.Logic.Rules;
 
 public class PlacementShouldBeNextToExistingPlacements : IPlacementRule
 {
-    public int Order => 2;
+    public int Order => 3;
 
     public Task<bool> ValidateAsync(Board board, PlacementModel placement)
     {

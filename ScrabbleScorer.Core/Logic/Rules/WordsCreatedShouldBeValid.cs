@@ -17,21 +17,29 @@ public class WordsCreatedShouldBeValid : IPlacementRule
     {
         var dictionaryWords = await _wordRepository.GetDictionaryWordsAsync();
 
-        var word = board.GetCreatedWordOfAlignment(placement).ToWord();
+        var attemptedPlacement = board.TryPlaceLetters(placement);
+        var word = attemptedPlacement.wordCreated.Select(l => l.Letter).ToList().ToWord();
+
+        var mainWordInDictionary = dictionaryWords.FindFirstMatching(word);
+
+        if (mainWordInDictionary is null)
+        {
+            return false;
+        }
+
+        var newPlacement = new PlacementModel
+        {
+            Coordinate = attemptedPlacement.firstCoordinate,
+            Alignment = placement.Alignment,
+            Letters = mainWordInDictionary.Select(mw => mw.ToLetter()).ToArray()
+        };
+
         var oppositeAlignmentWords = board
-            .GetCreatedWordsOppositeAlignment(placement)
+            .GetCreatedWordsOppositeAlignment(newPlacement)
             .Where(w => w.ToWord().Length > 1)
             .Select(w => w.ToWord())
             .ToList();
 
-        return placement.Letters.Count switch
-        {
-            1
-                => dictionaryWords.ShouldContain(word)
-                    || dictionaryWords.ShouldContain(oppositeAlignmentWords),
-            _
-                => dictionaryWords.ShouldContain(word)
-                    && dictionaryWords.ShouldContain(oppositeAlignmentWords)
-        };
+        return dictionaryWords.ShouldContain(oppositeAlignmentWords);
     }
 }
