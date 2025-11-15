@@ -1,5 +1,4 @@
 using System.Collections.Concurrent;
-using System.Diagnostics;
 using ScrabbleScorer.Core.Logic.Rules;
 
 namespace ScrabbleScorer.Core.Services;

@@ -1,5 +1,3 @@
-using ScrabbleScorer.Core.Logic.Rules;
-
 namespace ScrabbleScorer.Core.Utilities;
 
 public static class ScoringUtility

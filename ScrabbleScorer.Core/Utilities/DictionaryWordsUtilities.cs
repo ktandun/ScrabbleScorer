@@ -6,11 +6,6 @@ public static class DictionaryWordsUtilities
 
     extension(DictionaryWords dictionaryWords)
     {
-        public bool ShouldContain(string word)
-        {
-            return dictionaryWords.Words.Contains(word, WordComparer);
-        }
-
         public bool ShouldContain(IEnumerable<string> words)
         {
             // ReSharper disable once LoopCanBeConvertedToQuery
