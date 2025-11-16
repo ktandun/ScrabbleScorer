@@ -3,5 +3,5 @@ namespace ScrabbleScorer.Core.Logic.Rules;
 public interface IPlacementRule
 {
     int Order { get; }
-    Task<bool> ValidateAsync(Board board, PlacementModel placement);
+    bool Validate(Board board, PlacementModel placement);
 }

@@ -4,7 +4,7 @@ public class PlacementShouldBeNextToExistingPlacements : IPlacementRule
 {
     public int Order => 3;
 
-    public Task<bool> ValidateAsync(Board board, PlacementModel placement)
+    public bool Validate(Board board, PlacementModel placement)
     {
         var isValid = board.IsEmpty() switch
         {
@@ -12,6 +12,6 @@ public class PlacementShouldBeNextToExistingPlacements : IPlacementRule
             false => placement.IsTouchingOtherLetters(board),
         };
 
-        return Task.FromResult(isValid);
+        return isValid;
     }
 }

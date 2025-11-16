@@ -1,11 +1,12 @@
 using System.Collections.Concurrent;
+using System.Diagnostics;
 using ScrabbleScorer.Core.Logic.Rules;
 
 namespace ScrabbleScorer.Core.Services;
 
 public interface IGameService
 {
-    Task<List<PlacementScoreModel>> FindBestWordAsync(Board board, List<Letter> lettersOnHand);
+    List<PlacementScoreModel> FindBestWord(Board board, List<Letter> lettersOnHand);
 }
 
 public class GameService : IGameService
@@ -19,41 +20,45 @@ public class GameService : IGameService
         _calculationRules = placementRules.OrderBy(pr => pr.Order).ToArray();
     }
 
-    public async Task<List<PlacementScoreModel>> FindBestWordAsync(
-        Board board,
-        List<Letter> lettersOnHand
-    )
+    public List<PlacementScoreModel> FindBestWord(Board board, List<Letter> lettersOnHand)
     {
+        var stopwatch = Stopwatch.StartNew();
+
         var allPlacements = GenerateAllPlacements(board, lettersOnHand).ToArray();
-        var results = await ValidatePlacementsAsync(board, allPlacements);
+        var results = ValidatePlacements(board, allPlacements);
         var scoredPlacements = ScorePlacements(board, results);
         var highestNScores = scoredPlacements.OrderByDescending(sp => sp.Score).Take(10).ToList();
+
+        stopwatch.Stop();
+        Console.WriteLine(stopwatch.ElapsedMilliseconds);
+
         return highestNScores;
     }
 
-    private async Task<List<PlacementModel>> ValidatePlacementsAsync(
+    private List<PlacementModel> ValidatePlacements(
         Board board,
         IEnumerable<PlacementModel> allPlacements
     )
     {
         var validPlacements = new ConcurrentBag<PlacementModel>();
 
-        await Parallel.ForEachAsync(
+        Parallel.ForEach(
             allPlacements,
-            async (placement, token) =>
+            new ParallelOptions() { MaxDegreeOfParallelism = 4 },
+            (placement, token) =>
             {
-                if (await ValidatePlacementAsync(board, placement) is not null)
+                if (ValidatePlacement(board, placement) is not null)
                     validPlacements.Add(placement);
             }
         );
 
-        var results = validPlacements.Distinct().ToList();
+        var results = validPlacements.ToList();
         return results;
     }
 
     private List<PlacementScoreModel> ScorePlacements(Board board, List<PlacementModel> placements)
     {
-        return placements.Select(p => ScoringUtility.ScorePlacement(board, p)).ToList();
+        return placements.Select(p => ScoringUtility.ScorePlacement(board, p)).Distinct().ToList();
     }
 
     private IEnumerable<PlacementModel> GenerateAllPlacements(
@@ -77,19 +82,8 @@ public class GameService : IGameService
         );
     }
 
-    private async Task<PlacementModel?> ValidatePlacementAsync(
-        Board board,
-        PlacementModel placement
-    )
+    private PlacementModel? ValidatePlacement(Board board, PlacementModel placement)
     {
-        foreach (var rule in _calculationRules)
-        {
-            if (!await rule.ValidateAsync(board, placement))
-            {
-                return null;
-            }
-        }
-
-        return placement;
+        return _calculationRules.Any(rule => !rule.Validate(board, placement)) ? null : placement;
     }
 }

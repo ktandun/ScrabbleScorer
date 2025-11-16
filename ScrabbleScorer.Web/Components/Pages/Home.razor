@@ -89,15 +89,15 @@
         try
         {
             _calculateBtnText = "Calculating... This might take a while";
+            StateHasChanged();
 
-            var highestNScores = await GameService.FindBestWordAsync(Board, _playerLetters);
-
-            _placementScoreModels = highestNScores;
-
+            var highestNScores = Task.Run(() => GameService.FindBestWord(Board, _playerLetters));
+            _placementScoreModels = await highestNScores;
         }
         finally
         {
             _calculateBtnText = "Calculate";
+            StateHasChanged();
         }
     }
 

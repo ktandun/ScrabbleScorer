@@ -19,14 +19,6 @@ public record BonusTile
     public required BonusType BonusType { get; init; }
 }
 
-public record DictionaryWords(HashSet<string> Words)
-{
-    public string? FindFirstMatching(string word)
-    {
-        return Words.Contains(word) ? word : null;
-    }
-}
-
 public record PlacementScoreModel(PlacementModel Placement, int Score);
 
 public record PlacementModel

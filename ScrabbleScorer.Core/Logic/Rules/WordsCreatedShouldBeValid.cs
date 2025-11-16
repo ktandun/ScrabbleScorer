@@ -1,4 +1,3 @@
-using System.Collections.Immutable;
 using ScrabbleScorer.Core.Repositories;
 
 namespace ScrabbleScorer.Core.Logic.Rules;
@@ -14,13 +13,11 @@ public class WordsCreatedShouldBeValid : IPlacementRule
 
     public int Order => 4;
 
-    public Task<bool> ValidateAsync(Board board, PlacementModel placement)
+    public bool Validate(Board board, PlacementModel placement)
     {
         var placements = GenerateAllPossiblePlacementsReplacingBlanks(placement);
 
-        return Task.FromResult(
-            placements.Select(p => ValidateSinglePlacement(board, p)).All(result => result)
-        );
+        return placements.Select(p => ValidateSinglePlacement(board, p)).All(result => result);
     }
 
     private static IEnumerable<PlacementModel> GenerateAllPossiblePlacementsReplacingBlanks(
@@ -72,10 +69,7 @@ public class WordsCreatedShouldBeValid : IPlacementRule
     {
         var attemptedPlacement = board.TryPlaceLetters(placement);
         var word = attemptedPlacement.wordCreated.Select(l => l.Letter).ToList().ToWord();
-
-        var dictionaryWord = (
-            _wordRepository.GetDictionaryWordsOfLength(word.Length, word.First())
-        ).FindFirstMatching(word);
+        var dictionaryWord = _wordRepository.CheckWordInDictionary(word);
 
         if (dictionaryWord is null)
         {
@@ -96,14 +90,7 @@ public class WordsCreatedShouldBeValid : IPlacementRule
             .ToList();
 
         return oppositeAlignmentWords
-            .Select(oppositeAlignmentWord =>
-                _wordRepository
-                    .GetDictionaryWordsOfLength(
-                        oppositeAlignmentWord.Length,
-                        oppositeAlignmentWord.First()
-                    )
-                    .FindFirstMatching(oppositeAlignmentWord)
-            )
+            .Select(_wordRepository.CheckWordInDictionary)
             .All(isValid => isValid is not null);
     }
 }

@@ -17,7 +17,7 @@ public class WordsCreatedShouldBeValidTests
     [Fact]
     public async Task NormalWord()
     {
-        var valid = await _sut.ValidateAsync(
+        var valid = await _sut.Validate(
             new Board { BoardLetters = [] },
             new PlacementModel
             {
@@ -33,7 +33,7 @@ public class WordsCreatedShouldBeValidTests
     [Fact]
     public async Task WordWithBlank()
     {
-        var valid = await _sut.ValidateAsync(
+        var valid = await _sut.Validate(
             new Board { BoardLetters = [] },
             new PlacementModel
             {
@@ -51,7 +51,7 @@ public class WordsCreatedShouldBeValidTests
     [InlineData(Alignment.Vertical)]
     public async Task PlacingWordWithExistingWordOnOneSide(Alignment alignment)
     {
-        var valid = await _sut.ValidateAsync(
+        var valid = await _sut.Validate(
             new Board
             {
                 BoardLetters =
@@ -76,7 +76,7 @@ public class WordsCreatedShouldBeValidTests
     [Fact]
     public async Task PlacingWordWithExistingWordOnBothSides()
     {
-        var valid = await _sut.ValidateAsync(
+        var valid = await _sut.Validate(
             new Board
             {
                 BoardLetters =
@@ -100,7 +100,7 @@ public class WordsCreatedShouldBeValidTests
     [Fact]
     public async Task StackedPlacement()
     {
-        var valid = await _sut.ValidateAsync(
+        var valid = await _sut.Validate(
             new Board
             {
                 BoardLetters =
@@ -125,7 +125,7 @@ public class WordsCreatedShouldBeValidTests
     [Fact]
     public async Task StackedPlacement2()
     {
-        var valid = await _sut.ValidateAsync(
+        var valid = await _sut.Validate(
             new Board
             {
                 BoardLetters =

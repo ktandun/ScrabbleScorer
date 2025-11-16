@@ -1,8 +1,10 @@
+using System.Collections.Immutable;
+
 namespace ScrabbleScorer.Core.Repositories;
 
 public interface IWordRepository
 {
-    DictionaryWords GetDictionaryWordsOfLength(int length, char firstChar);
+    string? CheckWordInDictionary(string word);
 }
 
 public class WordRepository : IWordRepository
@@ -12,7 +14,8 @@ public class WordRepository : IWordRepository
         "Repositories",
         "words.txt"
     );
-    private static Dictionary<int, Dictionary<char, DictionaryWords>>? _wordsMap;
+
+    private static ImmutableHashSet<string>? _wordsMap;
 
     private void Setup()
     {
@@ -23,29 +26,13 @@ public class WordRepository : IWordRepository
 
         var allScrabbleWords = File.ReadAllLines(_wordsFile);
 
-        _wordsMap = allScrabbleWords
-            .GroupBy(w => w.Length)
-            .ToDictionary(
-                g => g.Key,
-                g =>
-                {
-                    var words = g.ToArray();
-
-                    return words
-                        .GroupBy(w => w.First())
-                        .ToDictionary(k => k.Key, v => new DictionaryWords(v.ToHashSet()));
-                }
-            );
+        _wordsMap = allScrabbleWords.ToImmutableHashSet();
     }
 
-    public DictionaryWords GetDictionaryWordsOfLength(int length, char firstChar)
+    public string? CheckWordInDictionary(string word)
     {
         Setup();
 
-        return
-            _wordsMap!.TryGetValue(length, out var words)
-            && words.TryGetValue(firstChar, out var word)
-            ? word
-            : new DictionaryWords([]);
+        return _wordsMap!.Contains(word) ? word : null;
     }
 }
