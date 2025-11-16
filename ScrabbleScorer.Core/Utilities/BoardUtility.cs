@@ -13,17 +13,26 @@ public static class BoardUtility
             for (var i = 1; i <= distance; i++)
             {
                 coordinates.Add(coordinate.NextTile(alignment, i));
-                coordinates.Add(
-                    coordinate.NextTile(alignment).NextTile(alignment.Opposite(), i - 1)
-                );
+                coordinates.Add(coordinate.PrevTile(alignment, i));
+
+                coordinates.Add(coordinate.NextTile(alignment.Opposite(), i));
                 coordinates.Add(coordinate.PrevTile(alignment.Opposite(), i));
-                coordinates.Add(
-                    coordinate.PrevTile(alignment.Opposite()).PrevTile(alignment, i - 1)
-                );
+
+                coordinates.Add(coordinate.NextTile(alignment).NextTile(alignment.Opposite(), i - 1));
+                coordinates.Add(coordinate.NextTile(alignment).PrevTile(alignment.Opposite(), i - 1));
+
+                coordinates.Add(coordinate.PrevTile(alignment).NextTile(alignment.Opposite(), i - 1));
+                coordinates.Add(coordinate.PrevTile(alignment).PrevTile(alignment.Opposite(), i - 1));
+
+                coordinates.Add(coordinate.NextTile(alignment.Opposite()).NextTile(alignment.Opposite(), i - 1));
+                coordinates.Add(coordinate.NextTile(alignment.Opposite()).PrevTile(alignment.Opposite(), i - 1));
+
+                coordinates.Add(coordinate.PrevTile(alignment.Opposite()).NextTile(alignment.Opposite(), i - 1));
+                coordinates.Add(coordinate.PrevTile(alignment.Opposite()).PrevTile(alignment.Opposite(), i - 1));
             }
         }
 
-        return coordinates.ToArray();
+        return coordinates.Where(c => c.X is >= 1 and <= BoardConstants.BoardSize && c.Y is >= 1 and <= BoardConstants.BoardSize).ToArray();
     }
 
     extension(Board board)

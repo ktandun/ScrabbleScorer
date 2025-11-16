@@ -1,5 +1,4 @@
 using System.Collections.Concurrent;
-using System.Diagnostics;
 using ScrabbleScorer.Core.Logic.Rules;
 
 namespace ScrabbleScorer.Core.Services;
@@ -25,19 +24,10 @@ public class GameService : IGameService
         List<Letter> lettersOnHand
     )
     {
-        var stopwatch = Stopwatch.StartNew();
         var allPlacements = GenerateAllPlacements(board, lettersOnHand).ToArray();
-        Console.WriteLine("1 " + stopwatch.ElapsedMilliseconds);
-        stopwatch.Restart();
         var results = await ValidatePlacementsAsync(board, allPlacements);
-        Console.WriteLine("2 " + stopwatch.ElapsedMilliseconds);
-        stopwatch.Restart();
         var scoredPlacements = ScorePlacements(board, results);
-        Console.WriteLine("3 " + stopwatch.ElapsedMilliseconds);
-        stopwatch.Restart();
         var highestNScores = scoredPlacements.OrderByDescending(sp => sp.Score).Take(10).ToList();
-        Console.WriteLine("4 " + stopwatch.ElapsedMilliseconds);
-        stopwatch.Stop();
         return highestNScores;
     }
 
@@ -50,7 +40,6 @@ public class GameService : IGameService
 
         await Parallel.ForEachAsync(
             allPlacements,
-            new ParallelOptions { MaxDegreeOfParallelism = 8 },
             async (placement, token) =>
             {
                 if (await ValidatePlacementAsync(board, placement) is not null)
@@ -74,9 +63,7 @@ public class GameService : IGameService
     {
         return (
             from alignment in BoardConstants.AllAlignments
-            from letters in CombinationUtils
-                .GetAllPermutationsOfAllSubsets(lettersOnHand)
-                .Distinct()
+            from letters in CombinationUtils.GetAllPermutationsOfAllSubsets(lettersOnHand)
             let lettersArray = letters.ToArray()
             from coordinate in board.BoardLetters.SelectMany(bl =>
                 BoardUtility.GetAllCoordinatesWithinDistance(bl.Coordinate, lettersArray.Length)
@@ -85,7 +72,7 @@ public class GameService : IGameService
             {
                 Coordinate = coordinate,
                 Alignment = alignment,
-                Letters = lettersArray,
+                Letters = letters
             }
         );
     }

@@ -1,5 +1,6 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
+using System.Text.Json;
 using Microsoft.Extensions.DependencyInjection;
 using ScrabbleScorer.Core.Enums;
 using ScrabbleScorer.Core.Logic.Rules;
@@ -19,65 +20,48 @@ var provider = services.BuildServiceProvider();
 
 var gameService = provider.GetRequiredService<IGameService>();
 
-await gameService.FindBestWordAsync(
-    new Board
+var board = """
     {
-        BoardLetters =
-        [
-            new LetterOnBoard { Letter = Letter.D, Coordinate = new Coordinate(5, 8) },
-            new LetterOnBoard { Letter = Letter.E, Coordinate = new Coordinate(6, 8) },
-            new LetterOnBoard { Letter = Letter.O, Coordinate = new Coordinate(7, 8) },
-            new LetterOnBoard { Letter = Letter.X, Coordinate = new Coordinate(8, 8) },
-            new LetterOnBoard { Letter = Letter.Y, Coordinate = new Coordinate(9, 8) },
-            //
-            new LetterOnBoard { Letter = Letter.K, Coordinate = new Coordinate(6, 6) },
-            new LetterOnBoard { Letter = Letter.A, Coordinate = new Coordinate(6, 7) },
-            new LetterOnBoard { Letter = Letter.S, Coordinate = new Coordinate(6, 9) },
-            //
-            new LetterOnBoard { Letter = Letter.J, Coordinate = new Coordinate(7, 5) },
-            new LetterOnBoard { Letter = Letter.I, Coordinate = new Coordinate(7, 6) },
-            new LetterOnBoard { Letter = Letter.A, Coordinate = new Coordinate(7, 7) },
-            //
-            new LetterOnBoard { Letter = Letter.N, Coordinate = new Coordinate(8, 4) },
-            new LetterOnBoard { Letter = Letter.O, Coordinate = new Coordinate(8, 5) },
-            new LetterOnBoard { Letter = Letter.R, Coordinate = new Coordinate(8, 6) },
-            //
-            new LetterOnBoard { Letter = Letter.O, Coordinate = new Coordinate(9, 4) },
-            new LetterOnBoard { Letter = Letter.P, Coordinate = new Coordinate(10, 4) },
-            new LetterOnBoard { Letter = Letter.A, Coordinate = new Coordinate(11, 4) },
-            new LetterOnBoard { Letter = Letter.L, Coordinate = new Coordinate(12, 4) },
-            new LetterOnBoard { Letter = Letter.I, Coordinate = new Coordinate(13, 4) },
-            new LetterOnBoard { Letter = Letter.T, Coordinate = new Coordinate(14, 4) },
-            new LetterOnBoard { Letter = Letter.O, Coordinate = new Coordinate(15, 4) },
-            //
-            new LetterOnBoard { Letter = Letter.D, Coordinate = new Coordinate(15, 1) },
-            new LetterOnBoard { Letter = Letter.E, Coordinate = new Coordinate(15, 2) },
-            new LetterOnBoard { Letter = Letter.F, Coordinate = new Coordinate(15, 3) },
-            //
-            new LetterOnBoard { Letter = Letter.Y, Coordinate = new Coordinate(11, 3) },
-            new LetterOnBoard { Letter = Letter.A, Coordinate = new Coordinate(12, 3) },
-            new LetterOnBoard { Letter = Letter.M, Coordinate = new Coordinate(13, 3) },
-            //
-            new LetterOnBoard { Letter = Letter.N, Coordinate = new Coordinate(9, 6) },
-            new LetterOnBoard { Letter = Letter.O, Coordinate = new Coordinate(9, 7) },
-            //
-            new LetterOnBoard { Letter = Letter.E, Coordinate = new Coordinate(10, 5) },
-            new LetterOnBoard { Letter = Letter.G, Coordinate = new Coordinate(11, 5) },
-            new LetterOnBoard { Letter = Letter.E, Coordinate = new Coordinate(12, 5) },
-            new LetterOnBoard { Letter = Letter.R, Coordinate = new Coordinate(13, 5) },
-            //
-            new LetterOnBoard { Letter = Letter.A, Coordinate = new Coordinate(12, 1) },
-            new LetterOnBoard { Letter = Letter.V, Coordinate = new Coordinate(12, 2) },
-            // new LetterOnBoard { Letter = Letter.A, Coordinate = new Coordinate(8, 8) },
-            // new LetterOnBoard { Letter = Letter.T, Coordinate = new Coordinate(9, 8) },
-            // new LetterOnBoard { Letter = Letter.O, Coordinate = new Coordinate(10, 8) },
-            // new LetterOnBoard { Letter = Letter.N, Coordinate = new Coordinate(11, 8) },
-            // new LetterOnBoard { Letter = Letter.E, Coordinate = new Coordinate(12, 8) },
-            // //
-            // new LetterOnBoard { Letter = Letter.H, Coordinate = new Coordinate(9, 6) },
-            // new LetterOnBoard { Letter = Letter.A, Coordinate = new Coordinate(9, 7) },
-            // new LetterOnBoard { Letter = Letter.E, Coordinate = new Coordinate(9, 9) },
-        ],
-    },
-    new List<Letter> { Letter.T, Letter.Blank, Letter.B, Letter.E, Letter.O, Letter.O, Letter.I }
+      "BoardLetters": [
+        { "Letter": 6, "Coordinate": { "X": 7, "Y": 8 } },
+        { "Letter": 18, "Coordinate": { "X": 8, "Y": 8 } },
+        { "Letter": 15, "Coordinate": { "X": 9, "Y": 8 } },
+        { "Letter": 14, "Coordinate": { "X": 10, "Y": 8 } },
+        { "Letter": 20, "Coordinate": { "X": 11, "Y": 8 } },
+        { "Letter": 19, "Coordinate": { "X": 12, "Y": 8 } },
+        { "Letter": 3, "Coordinate": { "X": 12, "Y": 9 } },
+        { "Letter": 2, "Coordinate": { "X": 11, "Y": 10 } },
+        { "Letter": 15, "Coordinate": { "X": 12, "Y": 10 } },
+        { "Letter": 1, "Coordinate": { "X": 11, "Y": 11 } },
+        { "Letter": 12, "Coordinate": { "X": 12, "Y": 11 } },
+        { "Letter": 25, "Coordinate": { "X": 11, "Y": 12 } },
+        { "Letter": 5, "Coordinate": { "X": 12, "Y": 12 } },
+        { "Letter": 24, "Coordinate": { "X": 12, "Y": 13 } },
+        { "Letter": 9, "Coordinate": { "X": 13, "Y": 13 } },
+        { "Letter": 19, "Coordinate": { "X": 14, "Y": 13 } },
+        { "Letter": 8, "Coordinate": { "X": 14, "Y": 14 } },
+        { "Letter": 13, "Coordinate": { "X": 15, "Y": 14 } },
+        { "Letter": 5, "Coordinate": { "X": 15, "Y": 15 } },
+        { "Letter": 7, "Coordinate": { "X": 14, "Y": 8 } },
+        { "Letter": 18, "Coordinate": { "X": 14, "Y": 9 } },
+        { "Letter": 1, "Coordinate": { "X": 14, "Y": 10 } },
+        { "Letter": 25, "Coordinate": { "X": 14, "Y": 11 } },
+        { "Letter": 9, "Coordinate": { "X": 14, "Y": 12 } },
+        { "Letter": 21, "Coordinate": { "X": 13, "Y": 9 } },
+        { "Letter": 20, "Coordinate": { "X": 13, "Y": 10 } },
+        { "Letter": 19, "Coordinate": { "X": 10, "Y": 11 } },
+        { "Letter": 12, "Coordinate": { "X": 10, "Y": 12 } },
+        { "Letter": 9, "Coordinate": { "X": 10, "Y": 13 } },
+        { "Letter": 16, "Coordinate": { "X": 10, "Y": 14 } },
+        { "Letter": 26, "Coordinate": { "X": 9, "Y": 7 } },
+        { "Letter": 15, "Coordinate": { "X": 15, "Y": 8 } },
+        { "Letter": 4, "Coordinate": { "X": 15, "Y": 9 } }
+      ]
+    }
+
+    """;
+
+await gameService.FindBestWordAsync(
+    JsonSerializer.Deserialize<Board>(board)!,
+    [Letter.Q, Letter.U, Letter.O, Letter.T, Letter.E, Letter.D, Letter.J]
 );

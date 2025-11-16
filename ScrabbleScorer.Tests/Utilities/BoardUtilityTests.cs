@@ -11,7 +11,7 @@ public class BoardUtilityTests
     {
         var board = TestData.TwoUnconnectedWordBoard;
 
-        var (finalCoordinate, wordCreated) = board.TryPlaceLetters(
+        var (_, finalCoordinate, wordCreated) = board.TryPlaceLetters(
             new PlacementModel
             {
                 Coordinate = new Coordinate(7, 8),
@@ -22,5 +22,13 @@ public class BoardUtilityTests
 
         Assert.Equal(new Coordinate(15, 8), finalCoordinate);
         Assert.Equal("XCATYBEDZ", wordCreated.ToWord());
+    }
+
+    [Fact]
+    public void GetAllCoordinatesWithinDistance()
+    {
+        var coord = new Coordinate(10, 14);
+
+        var results = BoardUtility.GetAllCoordinatesWithinDistance(coord, 6);
     }
 }

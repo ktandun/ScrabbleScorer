@@ -14,9 +14,19 @@ public class WordsCreatedShouldBeValid : IPlacementRule
 
     public int Order => 4;
 
-    public async Task<bool> ValidateAsync(Board board, PlacementModel placement)
+    public Task<bool> ValidateAsync(Board board, PlacementModel placement)
     {
-        var placements = new List<PlacementModel>();
+        var placements = GenerateAllPossiblePlacementsReplacingBlanks(placement);
+
+        return Task.FromResult(
+            placements.Select(p => ValidateSinglePlacement(board, p)).All(result => result)
+        );
+    }
+
+    private static IEnumerable<PlacementModel> GenerateAllPossiblePlacementsReplacingBlanks(
+        PlacementModel placement
+    )
+    {
         if (placement.Letters.Contains(Letter.Blank))
         {
             var numberOfBlanks = placement.Letters.Count(l => l == Letter.Blank);
@@ -27,16 +37,18 @@ public class WordsCreatedShouldBeValid : IPlacementRule
             switch (numberOfBlanks)
             {
                 case 1:
-                    placements.AddRange(
+                    var blankOne = (
                         BoardConstants
                             .AllLettersWithoutBlank.Select(i =>
                                 (Letter[])[.. placementLettersWithoutBlanks, i]
                             )
                             .Select(newLetters => placement with { Letters = newLetters })
                     );
+                    foreach (var l in blankOne)
+                        yield return l;
                     break;
                 case 2:
-                    placements.AddRange(
+                    var blankTwo = (
                         from i in BoardConstants.AllLettersWithoutBlank
                         from j in BoardConstants.AllLettersWithoutBlank
                         select (Letter[])[.. placementLettersWithoutBlanks, i, j] into newLetters
@@ -45,34 +57,24 @@ public class WordsCreatedShouldBeValid : IPlacementRule
                             Letters = newLetters
                         }
                     );
+                    foreach (var l in blankTwo)
+                        yield return l;
                     break;
             }
         }
         else
         {
-            placements.Add(placement);
+            yield return placement;
         }
-
-        foreach (var p in placements)
-        {
-            var result = await ValidateSinglePlacementAsync(board, p);
-
-            if (!result)
-            {
-                return false;
-            }
-        }
-
-        return true;
     }
 
-    private async Task<bool> ValidateSinglePlacementAsync(Board board, PlacementModel placement)
+    private bool ValidateSinglePlacement(Board board, PlacementModel placement)
     {
         var attemptedPlacement = board.TryPlaceLetters(placement);
         var word = attemptedPlacement.wordCreated.Select(l => l.Letter).ToList().ToWord();
 
         var dictionaryWord = (
-            await _wordRepository.GetDictionaryWordsOfLengthAsync(word.Length, word.First())
+            _wordRepository.GetDictionaryWordsOfLength(word.Length, word.First())
         ).FindFirstMatching(word);
 
         if (dictionaryWord is null)
@@ -93,21 +95,15 @@ public class WordsCreatedShouldBeValid : IPlacementRule
             .Select(w => w.ToWord())
             .ToList();
 
-        foreach (var oppositeAlignmentWord in oppositeAlignmentWords)
-        {
-            var isValid = (
-                await _wordRepository.GetDictionaryWordsOfLengthAsync(
-                    oppositeAlignmentWord.Length,
-                    oppositeAlignmentWord.First()
-                )
-            ).FindFirstMatching(oppositeAlignmentWord);
-
-            if (isValid is null)
-            {
-                return false;
-            }
-        }
-
-        return true;
+        return oppositeAlignmentWords
+            .Select(oppositeAlignmentWord =>
+                _wordRepository
+                    .GetDictionaryWordsOfLength(
+                        oppositeAlignmentWord.Length,
+                        oppositeAlignmentWord.First()
+                    )
+                    .FindFirstMatching(oppositeAlignmentWord)
+            )
+            .All(isValid => isValid is not null);
     }
 }

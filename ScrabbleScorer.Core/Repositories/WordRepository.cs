@@ -1,10 +1,8 @@
-using System.Collections.Immutable;
-
 namespace ScrabbleScorer.Core.Repositories;
 
 public interface IWordRepository
 {
-    Task<DictionaryWords> GetDictionaryWordsOfLengthAsync(int length, char firstChar);
+    DictionaryWords GetDictionaryWordsOfLength(int length, char firstChar);
 }
 
 public class WordRepository : IWordRepository
@@ -16,14 +14,14 @@ public class WordRepository : IWordRepository
     );
     private static Dictionary<int, Dictionary<char, DictionaryWords>>? _wordsMap;
 
-    private async Task SetupAsync()
+    private void Setup()
     {
         if (_wordsMap is not null)
         {
             return;
         }
 
-        var allScrabbleWords = await File.ReadAllLinesAsync(_wordsFile);
+        var allScrabbleWords = File.ReadAllLines(_wordsFile);
 
         _wordsMap = allScrabbleWords
             .GroupBy(w => w.Length)
@@ -40,9 +38,9 @@ public class WordRepository : IWordRepository
             );
     }
 
-    public async Task<DictionaryWords> GetDictionaryWordsOfLengthAsync(int length, char firstChar)
+    public DictionaryWords GetDictionaryWordsOfLength(int length, char firstChar)
     {
-        await SetupAsync();
+        Setup();
 
         return
             _wordsMap!.TryGetValue(length, out var words)
