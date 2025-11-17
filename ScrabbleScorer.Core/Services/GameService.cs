@@ -25,45 +25,37 @@ public class GameService : IGameService
         var stopwatch = Stopwatch.StartNew();
 
         var allPlacements = GenerateAllPlacements(board, lettersOnHand);
-        var results = ValidatePlacements(board, allPlacements);
-        var scoredPlacements = ScorePlacements(board, results);
-        var highestNScores = scoredPlacements.OrderByDescending(sp => sp.Score).Take(10);
+        var results = ValidateAndScorePlacements(board, allPlacements);
 
         stopwatch.Stop();
         Console.WriteLine(stopwatch.ElapsedMilliseconds);
 
-        return highestNScores;
+        return results;
     }
 
-    private List<PlacementModel> ValidatePlacements(
+    private IEnumerable<PlacementScoreModel> ValidateAndScorePlacements(
         Board board,
         IEnumerable<PlacementModel> allPlacements
     )
     {
-        var validPlacements = new ConcurrentBag<PlacementModel>();
+        var results = new ConcurrentBag<PlacementScoreModel>();
 
         Parallel.ForEach(
             allPlacements,
             (placement, token) =>
             {
-                if (ValidatePlacement(board, placement) is not null)
-                    validPlacements.Add(placement);
+                if (ValidatePlacement(board, placement) is null)
+                    return;
+
+                var scoredPlacements = ScoringUtility.ScorePlacement(board, placement);
+                results.Add(scoredPlacements);
             }
         );
 
-        var results = validPlacements.ToList();
-        return results;
+        return results.OrderByDescending(r => r.Score).Take(10);
     }
 
-    private IEnumerable<PlacementScoreModel> ScorePlacements(
-        Board board,
-        List<PlacementModel> placements
-    )
-    {
-        return placements.Select(p => ScoringUtility.ScorePlacement(board, p)).Distinct();
-    }
-
-    private IEnumerable<PlacementModel> GenerateAllPlacements(
+    private static IEnumerable<PlacementModel> GenerateAllPlacements(
         Board board,
         List<Letter> lettersOnHand
     )
@@ -81,7 +73,7 @@ public class GameService : IGameService
                 Alignment = alignment,
                 Letters = letters
             }
-        );
+        ).Distinct();
     }
 
     private PlacementModel? ValidatePlacement(Board board, PlacementModel placement)
