@@ -61,7 +61,7 @@ var board = """
 
     """;
 
-await gameService.FindBestWord(
+gameService.FindBestWord(
     JsonSerializer.Deserialize<Board>(board)!,
     [Letter.Q, Letter.U, Letter.O, Letter.T, Letter.E, Letter.D, Letter.J]
 );

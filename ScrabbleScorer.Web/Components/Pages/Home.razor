@@ -50,7 +50,7 @@
 <KeyBoard KeyPressed="HandleKeyPress" BackspacePressed="HandleBackspace"/>
 
 <button class="calculate-button" @onclick="OnClick">
-    @_calculateBtnText
+    @(_isCalculating ? "Calculating... this might take some time" : "Calculate")
 </button>
 
 <PlacementScores Scores="_placementScoreModels"></PlacementScores>
@@ -58,10 +58,10 @@
 @code {
     private Board Board { get; set; } = null!;
     private bool _isUpdatingBoard;
-    private string _calculateBtnText = "Calculate";
+    private bool _isCalculating;
     private Letter? _lastKey;
     private Coordinate? _lastCoordinate;
-    private List<PlacementScoreModel> _placementScoreModels = [];
+    private IEnumerable<PlacementScoreModel> _placementScoreModels = [];
 
     private readonly List<Letter> _playerLetters =
     [
@@ -86,9 +86,11 @@
 
     private async Task OnClick()
     {
+        if (_isCalculating) return;
+
         try
         {
-            _calculateBtnText = "Calculating... This might take a while";
+            _isCalculating = true;
             StateHasChanged();
 
             var highestNScores = Task.Run(() => GameService.FindBestWord(Board, _playerLetters));
@@ -96,7 +98,7 @@
         }
         finally
         {
-            _calculateBtnText = "Calculate";
+            _isCalculating = false;
             StateHasChanged();
         }
     }

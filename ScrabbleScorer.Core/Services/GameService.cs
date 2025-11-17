@@ -6,7 +6,7 @@ namespace ScrabbleScorer.Core.Services;
 
 public interface IGameService
 {
-    List<PlacementScoreModel> FindBestWord(Board board, List<Letter> lettersOnHand);
+    IEnumerable<PlacementScoreModel> FindBestWord(Board board, List<Letter> lettersOnHand);
 }
 
 public class GameService : IGameService
@@ -20,14 +20,14 @@ public class GameService : IGameService
         _calculationRules = placementRules.OrderBy(pr => pr.Order).ToArray();
     }
 
-    public List<PlacementScoreModel> FindBestWord(Board board, List<Letter> lettersOnHand)
+    public IEnumerable<PlacementScoreModel> FindBestWord(Board board, List<Letter> lettersOnHand)
     {
         var stopwatch = Stopwatch.StartNew();
 
-        var allPlacements = GenerateAllPlacements(board, lettersOnHand).ToArray();
+        var allPlacements = GenerateAllPlacements(board, lettersOnHand);
         var results = ValidatePlacements(board, allPlacements);
         var scoredPlacements = ScorePlacements(board, results);
-        var highestNScores = scoredPlacements.OrderByDescending(sp => sp.Score).Take(10).ToList();
+        var highestNScores = scoredPlacements.OrderByDescending(sp => sp.Score).Take(10);
 
         stopwatch.Stop();
         Console.WriteLine(stopwatch.ElapsedMilliseconds);
@@ -44,7 +44,6 @@ public class GameService : IGameService
 
         Parallel.ForEach(
             allPlacements,
-            new ParallelOptions() { MaxDegreeOfParallelism = 4 },
             (placement, token) =>
             {
                 if (ValidatePlacement(board, placement) is not null)
@@ -56,9 +55,12 @@ public class GameService : IGameService
         return results;
     }
 
-    private List<PlacementScoreModel> ScorePlacements(Board board, List<PlacementModel> placements)
+    private IEnumerable<PlacementScoreModel> ScorePlacements(
+        Board board,
+        List<PlacementModel> placements
+    )
     {
-        return placements.Select(p => ScoringUtility.ScorePlacement(board, p)).Distinct().ToList();
+        return placements.Select(p => ScoringUtility.ScorePlacement(board, p)).Distinct();
     }
 
     private IEnumerable<PlacementModel> GenerateAllPlacements(

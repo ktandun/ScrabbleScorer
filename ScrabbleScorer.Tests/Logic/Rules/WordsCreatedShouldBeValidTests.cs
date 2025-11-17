@@ -15,9 +15,9 @@ public class WordsCreatedShouldBeValidTests
     }
 
     [Fact]
-    public async Task NormalWord()
+    public void NormalWord()
     {
-        var valid = await _sut.Validate(
+        var valid = _sut.Validate(
             new Board { BoardLetters = [] },
             new PlacementModel
             {
@@ -31,9 +31,9 @@ public class WordsCreatedShouldBeValidTests
     }
 
     [Fact]
-    public async Task WordWithBlank()
+    public void WordWithBlank()
     {
-        var valid = await _sut.Validate(
+        var valid = _sut.Validate(
             new Board { BoardLetters = [] },
             new PlacementModel
             {
@@ -49,9 +49,9 @@ public class WordsCreatedShouldBeValidTests
     [Theory]
     [InlineData(Alignment.Horizontal)]
     [InlineData(Alignment.Vertical)]
-    public async Task PlacingWordWithExistingWordOnOneSide(Alignment alignment)
+    public void PlacingWordWithExistingWordOnOneSide(Alignment alignment)
     {
-        var valid = await _sut.Validate(
+        var valid = _sut.Validate(
             new Board
             {
                 BoardLetters =
@@ -74,9 +74,9 @@ public class WordsCreatedShouldBeValidTests
     }
 
     [Fact]
-    public async Task PlacingWordWithExistingWordOnBothSides()
+    public void PlacingWordWithExistingWordOnBothSides()
     {
-        var valid = await _sut.Validate(
+        var valid = _sut.Validate(
             new Board
             {
                 BoardLetters =
@@ -98,9 +98,9 @@ public class WordsCreatedShouldBeValidTests
     }
 
     [Fact]
-    public async Task StackedPlacement()
+    public void StackedPlacement()
     {
-        var valid = await _sut.Validate(
+        var valid = _sut.Validate(
             new Board
             {
                 BoardLetters =
@@ -123,9 +123,9 @@ public class WordsCreatedShouldBeValidTests
     }
 
     [Fact]
-    public async Task StackedPlacement2()
+    public void StackedPlacement2()
     {
-        var valid = await _sut.Validate(
+        var valid = _sut.Validate(
             new Board
             {
                 BoardLetters =

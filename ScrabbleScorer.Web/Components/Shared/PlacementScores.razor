@@ -2,7 +2,7 @@
 @using ScrabbleScorer.Core.Models
 
 <div class="placement-list">
-    @if (Scores.Count == 0)
+    @if (!Scores.Any())
     {
         <div class="empty">No placements available.</div>
     }
@@ -45,5 +45,5 @@
 </div>
 
 @code {
-    [Parameter] public List<PlacementScoreModel> Scores { get; set; } = [];
+    [Parameter] public IEnumerable<PlacementScoreModel> Scores { get; set; } = [];
 }
